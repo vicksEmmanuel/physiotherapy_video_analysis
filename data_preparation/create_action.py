@@ -2,6 +2,7 @@ import argparse
 import ffmpeg
 import os
 import datetime
+from actions import Action
 
 # Parse command line arguments
 parser = argparse.ArgumentParser()
@@ -15,7 +16,7 @@ args = parser.parse_args()
 video_to_get_actions_from = 'videos/' + args.input
 video_name = os.path.basename(args.input)
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
-output_dir = f"data-preparation/actions/{args.action}"
+output_dir = f"data_preparation/actions/{args.action}"
 output_file = f"{output_dir}/{timestamp}.mp4"
 
 # Ensure the output directory exists
@@ -28,3 +29,7 @@ print(video_name, args.start, args.end, args.action, video_to_get_actions_from, 
 (ffmpeg.input(video_to_get_actions_from, ss=args.start, to=args.end)
 	.output(output_file)
 	.run())
+
+
+actions = Action()
+actions.append_to_actions_list(args.action)
