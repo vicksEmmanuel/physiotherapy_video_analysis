@@ -3,7 +3,7 @@
 ## Installation
 
 ```
-pip install -r requirements.txt
+pip install -r requirement.txt
 ```
 
 Make sure to download `ffmpeg` on your device
