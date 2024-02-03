@@ -8,6 +8,14 @@ pip install -r requirement.txt
 
 Make sure to download `ffmpeg` on your device
 
+### Import Video Data
+
+```
+python videos/get_python.py
+```
+
+After importing video data completes, you can then extract different actions with the command below
+
 ```
 python data_preparation/create_action.py --input "Brief screenning.MOV" --action "moving backwards" --start "00:00:39" --end "00:00:49"
 ```
