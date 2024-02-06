@@ -11,7 +11,7 @@ Make sure to download `ffmpeg` on your device
 ### Import Video Data
 
 ```
-python videos/get_python.py
+python videos/get_videos.py
 ```
 
 After importing video data completes, you can then extract different actions with the command below
