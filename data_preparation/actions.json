@@ -1,1 +1,18 @@
-{"all_actions": ["postural landmark identification", "pelvis check", "spine examination", "anterior tilt", "posterior pelvic tilt", "postural sway", "mastoid process/neck exam", "acromion process/shoulder exam", "knee examination", "ankle examination", "lateral grvitational line check", "facial symmetry", "thoracic cage position", "foot medial arch exam"]}
+{
+	"all_actions": [
+		"postural landmark identification",
+		"pelvis check",
+		"spine examination",
+		"anterior tilt",
+		"posterior pelvic tilt",
+		"postural sway",
+		"mastoid process/neck exam",
+		"acromion process/shoulder exam",
+		"knee examination",
+		"ankle examination",
+		"lateral grvitational line check",
+		"facial symmetry",
+		"thoracic cage position",
+		"foot medial arch exam"
+	]
+}
