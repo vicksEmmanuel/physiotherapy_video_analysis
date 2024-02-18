@@ -1,1 +1,16 @@
-{"all_actions": ["postural landmark identification", "pelvis check", "spine examination", "pelvic tilt", "postural sway", "mastoid process/neck exam", "acromion process/shoulder exam", "knee examination", "foot and ankle examination", "facial symmetry", "thoracic cage position", "gravitational line check"]}
+{
+	"all_actions": [
+		"postural landmark identification",
+		"pelvis check",
+		"spine examination",
+		"pelvic tilt",
+		"postural sway",
+		"mastoid process",
+		"acromion process",
+		"knee examination",
+		"foot and ankle examination",
+		"facial symmetry",
+		"thoracic cage position",
+		"gravitational line check"
+	]
+}

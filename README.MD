@@ -25,3 +25,9 @@ Where
     --action should be the action discovered in the input video
     --start is the time the action begins
     --end is the time the action ends`
+
+## Building Actions Dataset
+
+```
+python data_preparation/action_dataset.py
+```
