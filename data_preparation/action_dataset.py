@@ -4,8 +4,13 @@ import os
 from matplotlib import pyplot as plt
 import time
 import mediapipe as mp
+import torch
 from torchvision import transforms
+from PackPathwayTransform import PackPathway
 from torch.utils.data import Dataset
+
+from actions import Action
+from util import get_transformer
 
 
 mp_holistic = mp.solutions.holistic # Holistic model
@@ -13,14 +18,19 @@ mp_drawing = mp.solutions.drawing_utils # Drawing utilities
 
 
 class ActionDataset(Dataset):
-    def __init__(self):
+    def __init__(self, transforms=None, num_frames=30, data_path='data_preparation/actions'):
+        self.transforms = transforms
+        self.num_frames = num_frames
+        self.pack_pathway = PackPathway()
+        self.data_path = data_path
+        self.actions = Action().action
         self.all_videos = self.get_actions_video()
-        self.pose = self.get_pose()
+
 
     def get_actions_video(self):
         video_paths = []
 
-        data_path = 'data_preparation/actions'
+        data_path = self.data_path
         for class_name in os.listdir(data_path):
             class_path = os.path.join(data_path, class_name) # Get the path to the class
 
@@ -29,67 +39,70 @@ class ActionDataset(Dataset):
                     file_path = os.path.join(class_path, file)
                     video_paths.append((file_path, class_name))
         return video_paths
-
-    def get_pose(self):
-        pose = []
-
-        for i in range(len(self.all_videos)):
-            cap = cv2.VideoCapture(self.all_videos[i][0]) # Get the video path
-            with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-                while cap.isOpened():
-
-                    # Read feed
-                    ret, frame = cap.read()
                     
-                    # Check if frame is not received properly then break the loop
-                    if not ret:
-                        print("Failed to grab frame")
-                        break
-
-                    # Process the frame with MediaPipe Holistic.
-                    # Convert the BGR image to RGB.
-                    image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    # Process the image and draw landmarks.
-                    results = holistic.process(image)
-                    # Convert the RGB image back to BGR.
-                    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
-                    # Visualization logic comes here (if needed)
-
-                    # Show to screen
-                    cv2.imshow('OpenCV Feed', frame)
-
-                    # Break gracefully
-                    if cv2.waitKey(10) & 0xFF == ord('q'):
-                        break
-                cap.release()
-                cv2.destroyAllWindows()
-
-        return pose
-                
     def __len__(self):
         return len(self.all_videos)
     
+    def convert_action_to_numpy(self, idx_action):
+        return self.actions.index(idx_action)
+    
+    def __getitem__(self, idx):
+       path = self.all_videos[idx][0]
+       frames = []
+       cap = cv2.VideoCapture(path) # Get the video path
+       v_len = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) # Get the video length
+       frame_idx = np.sort(np.random.choice(np.arange(v_len-1), self.num_frames))   #   get random frame indices, sometimes the last frame generates an error, therefore v_len-1
+       
+       #   iterate for each frame
+       for i in frame_idx:
+            img = torch.zeros((3, 224, 224))    #   empty tensor in case frame will not read by cv2
+            cap.set(cv2.CAP_PROP_POS_FRAMES, i) #   move to relevant frame index
+            ret, frame = cap.read()
+
+            # if frame was read
+            if ret:
+                img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB).astype(np.float32)
+                if self.transforms:   
+                    img = self.transforms(image=img)['image']
+            frames.append(img)
+       
+       cap.release()   #   release video
+
+       labels = self.convert_action_to_numpy(self.all_videos[idx][1])
+       frames = torch.stack(frames)
+
+       frames = torch.permute(frames, (1, 0, 2, 3))
+       frames = self.pack_pathway(frames)
+
+       return frames, labels, idx, dict()
+    
+    
+      
+
+if __name__ == '__main__':
+    train = ActionDataset(
+        transforms=get_transformer('valid'),
+    )
     
 
+    batch = train.__getitem__(10)
 
+    # Display frame of batch in an image
 
-# cap = cv2.VideoCapture(0)
-# # Set mediapipe model
-# with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-#     while cap.isOpened():
+    first_video_frames = batch[0][0]  # Access the first tensor in the list
 
-#         # Read feed
-#         ret, frame = cap.read()
+    # Select the first frame for visualization
+    # Assuming the tensor has dimensions [C, F, H, W], select the first frame
+    frame = first_video_frames[:, 0, :, :].detach().cpu().numpy()  # Convert to numpy
 
-#         # Show to screen
-#         cv2.imshow('OpenCV Feed', frame)
+    # Transpose the frame from [C, H, W] to [H, W, C] for plotting
+    frame = np.transpose(frame, (1, 2, 0))
 
-#         # Break gracefully
-#         if cv2.waitKey(10) & 0xFF == ord('q'):
-#             break
-#     cap.release()
-#     cv2.destroyAllWindows()
-        
+    # Normalize the frame's pixel values to [0, 1] for correct visualization
+    frame = (frame - frame.min()) / (frame.max() - frame.min())
 
-ActionDataset()
+    # Plot the frame
+    plt.imshow(frame)
+    plt.axis('off')  # Hide the axis
+
+    plt.show()
