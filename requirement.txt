@@ -6,3 +6,5 @@ zipfile36
 opencv-python
 mediapipe
 matplotlib
+albumentations
+pytorchvideo
