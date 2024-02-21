@@ -8,3 +8,4 @@ mediapipe
 matplotlib
 albumentations
 pytorchvideo
+pytorch-lightning

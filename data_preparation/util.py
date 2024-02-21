@@ -5,7 +5,8 @@ from torch.utils.data import DataLoader
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import cv2
-from config import *
+from data_preparation.config import *
+from data_preparation.action_dataset import ActionDataset
 
 
 def get_transformer(phase):
@@ -34,3 +35,30 @@ def get_transformer(phase):
         ])
 
     return valid_trans
+
+def get_loader(batch_size=4, num_workers=8, phase='train'):
+    dataset = ActionDataset(
+        transforms=get_transformer('valid'),
+    )
+
+    # Split dataset into training and validation sets
+    train_size = int(0.8 * len(dataset))
+    test_size = int(0.1 * len(dataset))
+    val_size = int(0.1 * len(dataset))
+    train_size = len(dataset) - test_size - val_size
+
+    train_dataset, test_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, test_size, val_size])
+
+    if (phase == 'train'):
+        dataset = train_dataset
+    elif (phase == 'test'):
+        dataset = test_dataset
+    else:
+        dataset = val_dataset
+
+    return DataLoader(
+        dataset, 
+        batch_size=batch_size,
+        num_workers=num_workers,
+        shuffle=True
+    )

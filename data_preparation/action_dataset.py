@@ -6,11 +6,10 @@ import time
 import mediapipe as mp
 import torch
 from torchvision import transforms
-from PackPathwayTransform import PackPathway
+from data_preparation.PackPathwayTransform import PackPathway
 from torch.utils.data import Dataset
 
-from actions import Action
-from util import get_transformer
+from data_preparation.actions import Action
 
 
 mp_holistic = mp.solutions.holistic # Holistic model
@@ -18,7 +17,7 @@ mp_drawing = mp.solutions.drawing_utils # Drawing utilities
 
 
 class ActionDataset(Dataset):
-    def __init__(self, transforms=None, num_frames=30, data_path='data_preparation/actions'):
+    def __init__(self, transforms=None, num_frames=200, data_path='data_preparation/actions'):
         self.transforms = transforms
         self.num_frames = num_frames
         self.pack_pathway = PackPathway()
@@ -52,7 +51,7 @@ class ActionDataset(Dataset):
        cap = cv2.VideoCapture(path) # Get the video path
        v_len = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) # Get the video length
        frame_idx = np.sort(np.random.choice(np.arange(v_len-1), self.num_frames))   #   get random frame indices, sometimes the last frame generates an error, therefore v_len-1
-       
+
        #   iterate for each frame
        for i in frame_idx:
             img = torch.zeros((3, 224, 224))    #   empty tensor in case frame will not read by cv2
@@ -77,32 +76,3 @@ class ActionDataset(Dataset):
        return frames, labels, idx, dict()
     
     
-      
-
-if __name__ == '__main__':
-    train = ActionDataset(
-        transforms=get_transformer('valid'),
-    )
-    
-
-    batch = train.__getitem__(10)
-
-    # Display frame of batch in an image
-
-    first_video_frames = batch[0][0]  # Access the first tensor in the list
-
-    # Select the first frame for visualization
-    # Assuming the tensor has dimensions [C, F, H, W], select the first frame
-    frame = first_video_frames[:, 0, :, :].detach().cpu().numpy()  # Convert to numpy
-
-    # Transpose the frame from [C, H, W] to [H, W, C] for plotting
-    frame = np.transpose(frame, (1, 2, 0))
-
-    # Normalize the frame's pixel values to [0, 1] for correct visualization
-    frame = (frame - frame.min()) / (frame.max() - frame.min())
-
-    # Plot the frame
-    plt.imshow(frame)
-    plt.axis('off')  # Hide the axis
-
-    plt.show()
