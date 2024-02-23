@@ -19,6 +19,8 @@ from model.slowfast_model import SlowFast
 
 def train(config):
 
+    print("Training begins:")
+
     train = ActionDataset(
         transforms=get_transformer('valid'),
     )
@@ -58,7 +60,7 @@ def train(config):
     model = SlowFast(drop_prob=config.drop_prob)
 
     trainer = Trainer(
-        #gpus=1,
+        gpus=1,
         # logger=wandb_logger,
         max_epochs=config.num_epochs,
         num_sanity_val_steps=0,
