@@ -17,7 +17,7 @@ mp_drawing = mp.solutions.drawing_utils # Drawing utilities
 
 
 class ActionDataset(Dataset):
-    def __init__(self, transforms=None, num_frames=200, data_path='data_preparation/actions'):
+    def __init__(self, transforms=None, num_frames=50, data_path='data_preparation/actions'):
         self.transforms = transforms
         self.num_frames = num_frames
         self.pack_pathway = PackPathway()
@@ -47,6 +47,7 @@ class ActionDataset(Dataset):
     
     def __getitem__(self, idx):
        path = self.all_videos[idx][0]
+       print(path)
        frames = []
        cap = cv2.VideoCapture(path) # Get the video path
        v_len = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) # Get the video length

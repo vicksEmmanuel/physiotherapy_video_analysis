@@ -75,6 +75,8 @@ def train(config):
 
     trainer = Trainer(
         # logger=wandb_logger,
+        # accelerator='gpu', # 'ddp' for distributed computing
+        devices=1, # Use 1 GPU
         max_epochs=config.num_epochs,
         num_sanity_val_steps=0,
         # overfit_batches=0.05,
