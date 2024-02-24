@@ -9,3 +9,4 @@ matplotlib
 albumentations
 pytorchvideo
 pytorch-lightning
+pytorch_lightning
