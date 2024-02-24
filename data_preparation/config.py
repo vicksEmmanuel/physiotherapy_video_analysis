@@ -2,8 +2,8 @@ class CFG:
     seed = 42
     num_frames = 32
     num_classes = 2
-    batch_size = 4
-    num_workers = 8
+    batch_size = 64
+    num_workers = 0
     learning_rate = 1e-4
     num_epochs = 3
     drop_prob = 0.
