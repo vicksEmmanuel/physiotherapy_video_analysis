@@ -1,3 +1,4 @@
+from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning import Trainer, seed_everything
 from data_preparation.action_dataset import ActionDataset
 from data_preparation.config import CFG
@@ -59,12 +60,26 @@ def train(config):
     
     model = SlowFast(drop_prob=config.drop_prob)
 
+    checkpoint_callback = ModelCheckpoint(
+        dirpath='checkpoints/', # Directory where the checkpoints will be saved
+        filename='{epoch}-{val_loss:.2f}', # File name, which can include values from logging
+        save_top_k=3, # Save the top 3 models according to the metric monitored below
+        verbose=True,
+        monitor='val_loss', # Metric to monitor for improvement
+        mode='min', # Mode 'min' is for loss, 'max' for accuracy
+        every_n_epochs=1, # Save checkpoint every epoch
+        save_last=True, # Save the last model regardless of the monitored metric
+    )
+
+    
+
     trainer = Trainer(
         # logger=wandb_logger,
         max_epochs=config.num_epochs,
         num_sanity_val_steps=0,
         # overfit_batches=0.05,
         # callbacks=[lr_monitor],
+        callbacks=[checkpoint_callback],
     )
 
     trainer.fit(model, loaders['train'], loaders['valid'])
