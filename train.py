@@ -60,7 +60,6 @@ def train(config):
     model = SlowFast(drop_prob=config.drop_prob)
 
     trainer = Trainer(
-        gpus=1,
         # logger=wandb_logger,
         max_epochs=config.num_epochs,
         num_sanity_val_steps=0,
