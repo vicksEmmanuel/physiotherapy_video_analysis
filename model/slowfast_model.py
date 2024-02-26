@@ -24,16 +24,16 @@ class SlowFast(LightningModule):
             model_num_class=self.num_classes,
             dropout_rate=self.drop_prob
         )
-        model_dict = self.slowfast.state_dict()
-        pretrained_dict = torch.hub.load('facebookresearch/pytorchvideo', 
-                                         'slowfast_r50', 
-                                         pretrained=True).state_dict()
-        pretrained_dict = {
-            k: v for k, v in pretrained_dict.items() 
-            if k in list(model_dict.keys()) and model_dict[k].shape == v.shape
-        }
-        model_dict.update(pretrained_dict) 
-        self.slowfast.load_state_dict(model_dict)
+        # model_dict = self.slowfast.state_dict()
+        # pretrained_dict = torch.hub.load('facebookresearch/pytorchvideo', 
+        #                                  'slowfast_r50', 
+        #                                  pretrained=True).state_dict()
+        # pretrained_dict = {
+        #     k: v for k, v in pretrained_dict.items() 
+        #     if k in list(model_dict.keys()) and model_dict[k].shape == v.shape
+        # }
+        # model_dict.update(pretrained_dict) 
+        # self.slowfast.load_state_dict(model_dict)
 
 
 
