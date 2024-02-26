@@ -23,7 +23,7 @@ def train(config):
     print("Training begins:")
 
     train = ActionDataset(
-        transforms=get_transformer('valid'),
+        transforms=get_transformer('train'),
     )
 
     batch = train.__getitem__(10)
