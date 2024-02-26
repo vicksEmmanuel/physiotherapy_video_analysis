@@ -38,7 +38,7 @@ def get_transformer(phase):
 
 def get_loader(batch_size=4, num_workers=8, phase='train'):
     dataset = ActionDataset(
-        transforms=get_transformer('valid'),
+        transforms=get_transformer(phase=phase),
     )
 
     # Split dataset into training and validation sets
