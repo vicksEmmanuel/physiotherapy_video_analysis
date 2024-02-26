@@ -60,7 +60,7 @@ class SlowFast(LightningModule):
         x, y = batch[0], batch[1]
         output = self(x)
 
-        acc = accuracy(output, y,task="multiclass",num_classes=2)
+        acc = accuracy(output, y,task="multiclass",num_classes=len(Action().action))
         loss = F.cross_entropy(output, y)
         metrics = {"train_acc": acc, "train_loss": loss}
 
