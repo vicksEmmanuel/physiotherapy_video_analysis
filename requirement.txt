@@ -10,5 +10,4 @@ albumentations
 pytorchvideo
 pytorch-lightning
 pytorch_lightning
-urllib
 requests
