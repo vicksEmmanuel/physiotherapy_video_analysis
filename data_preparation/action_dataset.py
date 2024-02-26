@@ -43,7 +43,7 @@ class ActionDataset(Dataset):
         return len(self.all_videos)
     
     def convert_action_to_numpy(self, idx_action):
-        return self.actions.index(idx_action)
+        return int(self.actions.index(idx_action))
     
     def __getitem__(self, idx):
        path = self.all_videos[idx][0]
