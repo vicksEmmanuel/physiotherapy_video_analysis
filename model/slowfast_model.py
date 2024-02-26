@@ -38,7 +38,7 @@ class SlowFast(LightningModule):
 
 
     def forward(self, x):
-        print(x.shape)
+        print(x)
         out = self.slowfast(x)
         return out
     
