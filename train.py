@@ -24,6 +24,7 @@ def train(config):
 
     train = ActionDataset(
         transforms=get_transformer('train'),
+        num_frames=config.num_frames
     )
 
     batch = train.__getitem__(10)
@@ -58,7 +59,7 @@ def train(config):
             for p in [ 'train', 'valid', 'test'] 
     }
     
-    model = SlowFast(drop_prob=config.drop_prob)
+    model = SlowFast(drop_prob=config.drop_prob, num_frames=config.num_frames)
 
     checkpoint_callback = ModelCheckpoint(
         dirpath='checkpoints/', # Directory where the checkpoints will be saved
