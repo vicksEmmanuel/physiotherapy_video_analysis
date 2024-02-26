@@ -10,7 +10,7 @@ from pytorch_lightning.core.module import LightningModule
 
 
 class SlowFast(LightningModule):
-    def __init__(self, drop_prob=0.5, num_frames=200):
+    def __init__(self, drop_prob=0.5, num_frames=50):
         super().__init__()
 
         self.drop_prob = drop_prob
@@ -22,7 +22,7 @@ class SlowFast(LightningModule):
     def load(self):
         self.slowfast = SlowFastModel.create_slowfast(
             model_num_class=self.num_classes,
-            dropout_rate=self.drop_prob
+            dropout_rate=self.drop_prob,
         )
         # model_dict = self.slowfast.state_dict()
         # pretrained_dict = torch.hub.load('facebookresearch/pytorchvideo', 
@@ -38,7 +38,9 @@ class SlowFast(LightningModule):
 
 
     def forward(self, x):
-        return self.slowfast(x)
+        print(x.shape)
+        out = self.slowfast(x)
+        return out
     
     def configure_optimizers(self):
         learning_rate = 1e-4
