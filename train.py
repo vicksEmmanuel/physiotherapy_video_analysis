@@ -66,7 +66,7 @@ def train(config):
         filename='{epoch}-{val_loss:.2f}', # File name, which can include values from logging
         save_top_k=3, # Save the top 3 models according to the metric monitored below
         verbose=True,
-        monitor='val_loss', # Metric to monitor for improvement
+        monitor='valid_loss', # Metric to monitor for improvement
         mode='min', # Mode 'min' is for loss, 'max' for accuracy
         every_n_epochs=1, # Save checkpoint every epoch
         save_last=True, # Save the last model regardless of the monitored metric
