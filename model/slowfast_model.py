@@ -81,8 +81,6 @@ class SlowFast(LightningModule):
 
     def _shared_eval_step(self, batch, batch_idx):
         x, y = batch[0], batch[1]
-        print(x.shape)
-        print(y.shape)
         output = self(x)
 
         acc = accuracy(output, y,task="multiclass", num_classes=len(Action().action))
