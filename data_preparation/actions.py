@@ -18,7 +18,6 @@ class Action:
             kinetics_classnames = json.load(f)
 
         self.kinetics_classnames = kinetics_classnames
-        print(self.kinetics_classnames)
 
         sorted_kinetics = sorted(self.kinetics_classnames.items(), key=lambda x: x[1], reverse=False)
 
@@ -35,7 +34,6 @@ class Action:
         except FileNotFoundError:
             print("File not found")
 
-        print(self.action)
         
             
 

@@ -23,8 +23,6 @@ output_file = f"{output_dir}/{timestamp}.mp4"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-print(video_name, args.start, args.end, args.action, video_to_get_actions_from, output_file)
-
 
 (ffmpeg.input(video_to_get_actions_from, ss=args.start, to=args.end)
 	.output(output_file)

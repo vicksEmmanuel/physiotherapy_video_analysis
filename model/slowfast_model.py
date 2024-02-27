@@ -29,8 +29,6 @@ class SlowFast(LightningModule):
                                          'slowfast_r50', 
                                          pretrained=True).state_dict()
         
-        print(pretrained_dict.items())
-        print("Model dict: ", model_dict.items())
         pretrained_dict = {
             k: v for k, v in pretrained_dict.items() 
             if k in list(model_dict.keys()) and model_dict[k].shape == v.shape
@@ -41,7 +39,6 @@ class SlowFast(LightningModule):
 
 
     def forward(self, x):
-        print(x)
         out = self.slowfast(x)
         return out
     
