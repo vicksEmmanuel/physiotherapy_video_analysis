@@ -1,7 +1,7 @@
 import random
 import numpy as np
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader,random_split
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import cv2
@@ -19,20 +19,20 @@ def get_transformer(phase):
         ToTensorV2(p=1.0)
     ])
 
-    if phase == 'train':
-        return A.Compose([
-            # A.OneOf([
-                # A.Emboss(p=0.3),
-            #     A.Sharpen(p=0.3),
-            # ], p=0.5),
-            # A.OneOf([
-                # A.Blur(p=0.3),
-                # A.GaussNoise(p=0.3, var_limit=(300, 400)),
-                # A.MotionBlur(p=0.3, blur_limit=(10, 20)),
-            # ], p=1),
-            # A.Rotate(p=0.5, limit=[-35, 35]),
-            valid_trans,
-        ])
+    # if phase == 'train':
+    #     return A.Compose([
+    #         # A.OneOf([
+    #             # A.Emboss(p=0.3),
+    #         #     A.Sharpen(p=0.3),
+    #         # ], p=0.5),
+    #         # A.OneOf([
+    #             # A.Blur(p=0.3),
+    #             # A.GaussNoise(p=0.3, var_limit=(300, 400)),
+    #             # A.MotionBlur(p=0.3, blur_limit=(10, 20)),
+    #         # ], p=1),
+    #         # A.Rotate(p=0.5, limit=[-35, 35]),
+    #         valid_trans,
+    #     ])
 
     return valid_trans
 
@@ -42,24 +42,32 @@ def get_loader(batch_size=4, num_workers=8, phase='train'):
         num_frames=CFG.num_frames
     )
 
-    # Split dataset into training and validation sets
-    train_size = int(0.8 * len(dataset))
-    test_size = int(0.1 * len(dataset))
-    val_size = int(0.1 * len(dataset))
-    train_size = len(dataset) - test_size - val_size
+    # Calculate split sizes
+    total_size = len(dataset)
+    test_size = int(0.1 * total_size)
+    val_size = int(0.1 * total_size)
+    train_size = total_size - test_size - val_size
 
-    train_dataset, test_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, test_size, val_size])
+    # Split dataset into training, validation, and test sets
+    train_dataset, test_dataset, val_dataset = random_split(dataset, [train_size, test_size, val_size])
 
-    if (phase == 'train'):
-        dataset = train_dataset
-    elif (phase == 'test'):
-        dataset = test_dataset
-    else:
-        dataset = val_dataset
+    # Select the appropriate dataset for the phase
+    if phase == 'train':
+        selected_dataset = train_dataset
+        shuffle = True  # Typically you shuffle the training dataset
+    elif phase == 'test':
+        selected_dataset = test_dataset
+        shuffle = False  # No need to shuffle the test dataset
+    else:  # 'val' or any other phase defaults to validation
+        selected_dataset = val_dataset
+        shuffle = False  # No need to shuffle the validation dataset
 
-    return DataLoader(
-        dataset, 
+    # Create the DataLoader for the selected dataset
+    loader = DataLoader(
+        selected_dataset, 
         batch_size=batch_size,
         num_workers=num_workers,
-        shuffle=True
+        shuffle=shuffle
     )
+
+    return loader

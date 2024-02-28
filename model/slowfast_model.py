@@ -18,24 +18,25 @@ class SlowFast(LightningModule):
         self.num_classes = len(Action().action)
 
         self.load()
-    
+
     def load(self):
+        # Initialize the SlowFast model with the Kinetics number of classes first
         self.slowfast = SlowFastModel.create_slowfast(
             model_num_class=self.num_classes,
             dropout_rate=self.drop_prob,
         )
-        model_dict = self.slowfast.state_dict()
-        pretrained_dict = torch.hub.load('facebookresearch/pytorchvideo', 
-                                         'slowfast_r50', 
-                                         pretrained=True).state_dict()
-        
-        pretrained_dict = {
-            k: v for k, v in pretrained_dict.items() 
-            if k in list(model_dict.keys()) and model_dict[k].shape == v.shape
-        }
-        model_dict.update(pretrained_dict) 
-        self.slowfast.load_state_dict(model_dict)
+        # Load the pretrained weights for the Kinetics classes
+        pretrained_dict = torch.hub.load('facebookresearch/pytorchvideo', 'slowfast_r50', pretrained=True).state_dict()
 
+        # Remove the final layer weights (since this will be adapted to the new number of classes)
+        pretrained_dict = {k: v for k, v in pretrained_dict.items() if 'head.projection' not in k}
+
+        # Update the model with the pretrained weights
+        self.slowfast.load_state_dict(pretrained_dict, strict=False)
+
+        # Replace the final layer with a new one that has the correct number of outputs
+        num_features = self.slowfast.head.projection.in_features
+        self.slowfast.head.projection = nn.Linear(num_features, self.num_classes)
 
 
     def forward(self, x):
