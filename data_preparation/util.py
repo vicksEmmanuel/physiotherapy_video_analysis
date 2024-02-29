@@ -29,10 +29,6 @@ from data_preparation.action_dataset import ActionDataset
 
 
 
-
-
-
-
 def get_new_transformer(phase):
     side_size = 256
     mean = [0.45, 0.45, 0.45]
