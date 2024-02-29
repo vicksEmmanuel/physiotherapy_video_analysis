@@ -54,22 +54,16 @@ class ActionDataset(Dataset):
         frames = []
 
         labels = self.convert_action_to_numpy(self.all_videos[idx][1])
-        print(f"Labels: {labels}")
-
         new_path = get_video_clip_and_resize(path)
         video = EncodedVideo.from_path(new_path)
         total_duration = int(video.duration)
 
-        print(f"Video duration: {video.duration} {total_duration}")
         video_data = video.get_clip(start_sec=0, end_sec=total_duration)
 
         if self.transforms:
             video_data = self.transforms(video_data)
 
-        print(frames)
+        video_tensor = video_data['video']
+        label_tensor = torch.tensor(labels, dtype=torch.long)
 
-        frames = video_data['video']
-        return frames, labels, idx, dict()
-
-    
-    
+        return video_tensor, label_tensor
