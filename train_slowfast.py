@@ -58,8 +58,12 @@ def train(config):
         p: get_loader(config.batch_size, config.num_workers, p)
             for p in [ 'train', 'valid', 'test'] 
     }
+
+    print("Loaders created")
     
     model = SlowFast(drop_prob=config.drop_prob, num_frames=config.num_frames)
+
+    print(f"Model created: {model}")
 
     checkpoint_callback = ModelCheckpoint(
         dirpath='checkpoints/', # Directory where the checkpoints will be saved
