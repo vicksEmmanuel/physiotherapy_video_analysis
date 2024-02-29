@@ -56,7 +56,7 @@ class ActionDataset(Dataset):
         print(f"Labels: {labels}")
         video = EncodedVideo.from_path(path)
         total_duration = int(video.duration)
-        print(f"Video: {video}")
+        
         print(f"Video duration: {video.duration} {total_duration}")
         video_data = video.get_clip(0, total_duration)
         print(f"Video: {video_data}")
