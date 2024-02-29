@@ -68,7 +68,7 @@ def train(config):
     checkpoint_callback = ModelCheckpoint(
         dirpath='checkpoints/', # Directory where the checkpoints will be saved
         filename='{epoch}-{val_loss:.2f}', # File name, which can include values from logging
-        save_top_k=3, # Save the top 3 models according to the metric monitored below
+        save_top_k=1, # Save the top 3 models according to the metric monitored below
         verbose=True,
         monitor='valid_loss', # Metric to monitor for improvement
         mode='min', # Mode 'min' is for loss, 'max' for accuracy
