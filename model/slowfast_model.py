@@ -20,10 +20,11 @@ class SlowFast(LightningModule):
         self.load()
 
     def load(self):
-        self.slowfast = SlowFastModel.create_slowfast(
-            model_num_class=self.num_classes,
-            dropout_rate=self.drop_prob,
-        )
+        self.slowfast = torch.hub.load('facebookresearch/pytorchvideo', 'slowfast_r50', pretrained=True)
+        final_layer = self.slowfast.blocks[-1]
+        num_features = final_layer.proj.in_features
+        print(num_features)
+        final_layer.proj = nn.Linear(num_features, self.num_classes)
 
 
     def forward(self, x):
