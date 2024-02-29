@@ -17,6 +17,8 @@ from torch.utils.data import Dataset
 from data_preparation.actions import Action
 from model.slowfast_model import SlowFast
 
+print(Action().action)
+
 
    # Plot the frame
 def show_image(frame):
