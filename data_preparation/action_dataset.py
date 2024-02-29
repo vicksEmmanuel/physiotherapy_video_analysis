@@ -53,6 +53,7 @@ class ActionDataset(Dataset):
         print(path)
         frames = []
 
+
         labels = self.convert_action_to_numpy(self.all_videos[idx][1])
         new_path = get_video_clip_and_resize(path)
         video = EncodedVideo.from_path(new_path)
@@ -67,38 +68,3 @@ class ActionDataset(Dataset):
         label_tensor = torch.tensor(labels, dtype=torch.long)
 
         return video_tensor, label_tensor
-    
-
-    # def __getitem__(self, idx):
-    #    path = self.all_videos[idx][0]
-    #    print(path)
-    #    frames = []
-    #    cap = cv2.VideoCapture(path) # Get the video path
-    #    v_len = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) # Get the video length
-    #    frame_idx = np.sort(np.random.choice(np.arange(v_len-1), self.num_frames))   #   get random frame indices, sometimes the last frame generates an error, therefore v_len-1
-
-    #    #   iterate for each frame
-    #    for i in frame_idx:
-    #         img = torch.zeros((3, 224, 224))    #   empty tensor in case frame will not read by cv2
-    #         cap.set(cv2.CAP_PROP_POS_FRAMES, i) #   move to relevant frame index
-    #         ret, frame = cap.read()
-
-    #         # if frame was read
-    #         if ret:
-    #             img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB).astype(np.float32)
-    #             if self.transforms:   
-    #                 img = self.transforms(image=img)['image']
-    #         frames.append(img)
-       
-    #    cap.release()   #   release video
-
-    #    labels = self.convert_action_to_numpy(self.all_videos[idx][1])
-    #    frames = torch.stack(frames)
-
-    #    frames = torch.permute(frames, (1, 0, 2, 3))
-    #    frames = self.pack_pathway(frames)
-
-    #    return frames, labels, idx, dict()
-
-    
-    

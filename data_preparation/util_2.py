@@ -13,6 +13,10 @@ def get_video_clip_and_resize(video_path):
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
     path_without_extension = os.path.splitext(video_path)[0]
     new_path = f"{path_without_extension}_resized.mp4"
+
+    if os.path.exists(new_path):
+        return new_path
+
     out = cv2.VideoWriter(new_path, fourcc, 20.0, (256, 256))
 
     while cap.isOpened():
