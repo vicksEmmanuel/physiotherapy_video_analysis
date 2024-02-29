@@ -25,7 +25,7 @@ new_path = get_video_clip_and_resize(video_path)
 video = EncodedVideo.from_path(new_path)
 
 # Load your trained SlowFast model
-model = SlowFast.load_from_checkpoint("checkpoints/last.ckpt")
+model = SlowFast.load_from_checkpoint("checkpoints/last-v2.ckpt")
 model.eval()
 model.to(device)
 
