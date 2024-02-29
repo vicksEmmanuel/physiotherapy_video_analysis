@@ -16,7 +16,6 @@ class SlowFast(LightningModule):
         self.drop_prob = drop_prob
         self.num_frames = num_frames
         self.num_classes = len(Action().action)
-        self.kinetick_classes = 400
 
         self.load()
 
@@ -29,11 +28,15 @@ class SlowFast(LightningModule):
 
         self.slowfast = torch.hub.load('facebookresearch/pytorchvideo', 'slowfast_r50', pretrained=True)
         # Access the final classification layer (proj) in the ResNetBasicHead
+        print("done1")
         final_layer = self.slowfast.blocks[-1]  # Assuming the ResNetBasicHead is the last block
+        print("done2")
         # Extract the number of input features to the final layer
         num_features = final_layer.proj.in_features
+        print("done3")
         # Replace the final layer with a new one adjusted for your number of classes
         final_layer.proj = nn.Linear(num_features, self.num_classes)
+        print("done4")
 
 
     def forward(self, x):
