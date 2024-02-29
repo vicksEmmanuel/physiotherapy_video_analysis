@@ -1,6 +1,5 @@
 import json
 import json
-import urllib
 import requests
 
 class Action:
