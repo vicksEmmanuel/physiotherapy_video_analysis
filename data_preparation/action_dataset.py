@@ -12,7 +12,7 @@ from data_preparation.PackPathwayTransform import PackPathway
 from torch.utils.data import Dataset
 
 from data_preparation.actions import Action
-from data_preparation.util import get_video_clip_and_resize
+from data_preparation.util_2 import get_video_clip_and_resize
 
 
 mp_holistic = mp.solutions.holistic # Holistic model

@@ -7,7 +7,9 @@ from model.slowfast_model import SlowFast  # Ensure this import matches your pro
 from torchvision import transforms
 from data_preparation.config import CFG  # Ensure this import matches your project structure
 from data_preparation.PackPathwayTransform import PackPathway
-from data_preparation.util import get_transformer,get_new_transformer, get_video_clip_and_resize  # Ensure this import matches your project structure
+from data_preparation.util import get_transformer,get_new_transformer  # Ensure this import matches your project structure
+from data_preparation.util_2 import get_video_clip_and_resize  # Ensure this import matches your project structure
+
 
 # Assuming device setup as before
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
