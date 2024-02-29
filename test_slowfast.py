@@ -17,7 +17,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 # Prepare video capture
-video_path = 'data_preparation/actions/foot and ankle examination/2024-02-14 15-56-41.mp4'
+video_path = 'archery.mp4'
 
 cap = cv2.VideoCapture(video_path)
 # Define the codec and create VideoWriter object to save the video
@@ -25,7 +25,7 @@ new_path = get_video_clip_and_resize(video_path)
 video = EncodedVideo.from_path(new_path)
 
 # Load your trained SlowFast model
-model = SlowFast.load_from_checkpoint("checkpoints/last.ckpt")
+model = SlowFast.load_from_checkpoint("checkpoints/last-v2.ckpt")
 model.eval()
 model.to(device)
 
