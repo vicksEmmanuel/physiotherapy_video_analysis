@@ -16,27 +16,24 @@ class SlowFast(LightningModule):
         self.drop_prob = drop_prob
         self.num_frames = num_frames
         self.num_classes = len(Action().action)
+        self.kinetick_classes = 400
 
         self.load()
 
     def load(self):
         # Initialize the SlowFast model with the Kinetics number of classes first
-        self.slowfast = SlowFastModel.create_slowfast(
-            model_num_class=self.num_classes,
-            dropout_rate=self.drop_prob,
-        )
-        # Load the pretrained weights for the Kinetics classes
-        pretrained_dict = torch.hub.load('facebookresearch/pytorchvideo', 'slowfast_r50', pretrained=True).state_dict()
+        # self.slowfast = SlowFastModel.create_slowfast(
+        #     model_num_class=self.kinetick_classes,
+        #     dropout_rate=self.drop_prob,
+        # )
 
-        # Remove the final layer weights (since this will be adapted to the new number of classes)
-        pretrained_dict = {k: v for k, v in pretrained_dict.items() if 'head.projection' not in k}
-
-        # Update the model with the pretrained weights
-        self.slowfast.load_state_dict(pretrained_dict, strict=False)
-
-        # Replace the final layer with a new one that has the correct number of outputs
-        num_features = self.slowfast.head.projection.in_features
-        self.slowfast.head.projection = nn.Linear(num_features, self.num_classes)
+        self.slowfast = torch.hub.load('facebookresearch/pytorchvideo', 'slowfast_r50', pretrained=True)
+        # Access the final classification layer (proj) in the ResNetBasicHead
+        final_layer = self.slowfast.blocks[-1]  # Assuming the ResNetBasicHead is the last block
+        # Extract the number of input features to the final layer
+        num_features = final_layer.proj.in_features
+        # Replace the final layer with a new one adjusted for your number of classes
+        final_layer.proj = nn.Linear(num_features, self.num_classes)
 
 
     def forward(self, x):
