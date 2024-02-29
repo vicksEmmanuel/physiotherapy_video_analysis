@@ -1,3 +1,4 @@
+from pytorchvideo.data.encoded_video import EncodedVideo
 import cv2
 import numpy as np
 import os
@@ -46,63 +47,24 @@ class ActionDataset(Dataset):
     def convert_action_to_numpy(self, idx_action):
         return int(self.actions.index(idx_action))
     
-    # def __getitem__(self, idx):
-    #    path = self.all_videos[idx][0]
-    #    print(path)
-    #    frames = []
-    #    cap = cv2.VideoCapture(path) # Get the video path
-    #    v_len = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) # Get the video length
-    #    frame_idx = np.sort(np.random.choice(np.arange(v_len-1), self.num_frames))   #   get random frame indices, sometimes the last frame generates an error, therefore v_len-1
-
-    #    #   iterate for each frame
-    #    for i in frame_idx:
-    #         img = torch.zeros((3, 224, 224))    #   empty tensor in case frame will not read by cv2
-    #         cap.set(cv2.CAP_PROP_POS_FRAMES, i) #   move to relevant frame index
-    #         ret, frame = cap.read()
-
-    #         # if frame was read
-    #         if ret:
-    #             img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB).astype(np.float32)
-    #             if self.transforms:   
-    #                 img = self.transforms(image=img)['image']
-    #         frames.append(img)
-       
-    #    cap.release()   #   release video
-
-    #    labels = self.convert_action_to_numpy(self.all_videos[idx][1])
-    #    frames = torch.stack(frames)
-
-    #    frames = torch.permute(frames, (1, 0, 2, 3))
-    #    frames = self.pack_pathway(frames)
-
-    #    return frames, labels, idx, dict()
-    
     def __getitem__(self, idx):
         path = self.all_videos[idx][0]
         print(path)
         frames = []
         cap = cv2.VideoCapture(path)  # Get the video path
         v_len = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))  # Get the video length
-        frame_idx = np.sort(np.random.choice(np.arange(v_len-1), self.num_frames))  # Get random frame indices
+        clip_duration = v_len / cap.get(cv2.CAP_PROP_FPS)
 
-        # Iterate for each frame
-        for i in frame_idx:
-            ret, frame = cap.read()
-
-            # If frame was read
-            if ret:
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB).astype(np.float32)
-                frame = self.transforms(image=frame)['image']  # Apply transformations
-                frames.append(frame)
-            else:
-                frames.append(torch.zeros((3, CFG.height, CFG.width)))  # In case frame is not read
-
-        cap.release()  # Release video
-
+        start_sec = 0
+        end_sec = start_sec + clip_duration
+        video = EncodedVideo.from_path(path)
         labels = self.convert_action_to_numpy(self.all_videos[idx][1])
-        frames = torch.stack(frames)
-        frames = torch.permute(frames, (1, 0, 2, 3))  # Adjust dimensions if necessary
-        frames = self.pack_pathway(frames)
+
+        video_data = video.get_clip(start_sec=start_sec, end_sec=end_sec)
+        # Apply a transform to normalize the video input
+        video_data = self.transforms(video_data)
+        # Move the inputs to the desired device
+        frames = video_data["video"]
 
         return frames, labels, idx, dict()
 
