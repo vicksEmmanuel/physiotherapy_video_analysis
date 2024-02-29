@@ -12,12 +12,12 @@ from data_preparation.util import get_transformer  # Ensure this import matches 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load your trained SlowFast model
-model = SlowFast.load_from_checkpoint("checkpoints/epoch=99-val_loss=0.00.ckpt")
+model = SlowFast.load_from_checkpoint("checkpoints/last-v1.ckpt")
 model.eval()
 model.to(device)
 
 # Prepare video capture
-cap = cv2.VideoCapture('data_preparation/actions/foot and ankle examination/2024-02-14 16-01-42.mp4')
+cap = cv2.VideoCapture('archery.mp4')
 fps = int(cap.get(cv2.CAP_PROP_FPS))
 
 transform = get_transformer('test')
