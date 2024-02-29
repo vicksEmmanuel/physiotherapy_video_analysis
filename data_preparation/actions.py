@@ -17,13 +17,7 @@ class Action:
             kinetics_classnames = json.load(f)
 
         self.kinetics_classnames = kinetics_classnames
-
-        sorted_kinetics = sorted(self.kinetics_classnames.items(), key=lambda x: x[1], reverse=False)
-
-        for action in sorted_kinetics:
-            self.action.append(action[0].replace('"', ""))
-
-
+        self.kinetics_classnames = sorted(self.kinetics_classnames.items(), key=lambda x: x[1], reverse=False)
 
         try:
             with open("data_preparation/actions.json", 'r') as f:

@@ -17,7 +17,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 # Prepare video capture
-video_path = 'archery.mp4'
+video_path = 'data_preparation/actions/knee examination/2024-02-14 16-42-51.mp4'
 
 cap = cv2.VideoCapture(video_path)
 # Define the codec and create VideoWriter object to save the video
@@ -45,17 +45,31 @@ for start_sec in range(0, total_duration):
     # Ensure frames are on the correct device
     frames = [i.to(device)[None, ...] for i in frames]
 
+    confidence_threshold = 0.5
+
     with torch.no_grad():
         outputs = model(frames)
         post_act = torch.nn.Softmax(dim=1)
         preds = post_act(outputs)
-        pred_classes = preds.topk(k=5).indices[0]
-        pred_class_names = [Action().action[int(i)] for i in pred_classes]
-        actions_this_second = pred_class_names
+        top_preds = preds.topk(k=10)
+        pred_classes = top_preds.indices[0]
+        confidences = top_preds.values[0]  # Get the confidence values of the top predictions
 
-    # Log or use the actions_this_second as needed
-    print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
-    actions_per_second.append(actions_this_second)
+        actions_this_second = []
+        for idx, confidence in enumerate(confidences):
+            if confidence > confidence_threshold:
+                action_name = Action().action[int(pred_classes[idx])]
+                actions_this_second.append(action_name)
+            else:
+                actions_this_second.append("")  # Placeholder for low confidence predictions
+
+        # Log or use the actions_this_second as needed
+        if actions_this_second:  # Check if the list is not empty
+            print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
+            actions_per_second.append(actions_this_second)
+        else:
+            print(f"No confident actions for second {start_sec}-{end_sec}.")
+
         
 
 # Log or use the actions_this_second as needed
