@@ -51,21 +51,15 @@ class ActionDataset(Dataset):
         path = self.all_videos[idx][0]
         print(path)
         frames = []
-        cap = cv2.VideoCapture(path)  # Get the video path
-        v_len = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))  # Get the video length
-        clip_duration = v_len / cap.get(cv2.CAP_PROP_FPS)
 
-        start_sec = 0
-        end_sec = start_sec + clip_duration
-        video = EncodedVideo.from_path(path)
         labels = self.convert_action_to_numpy(self.all_videos[idx][1])
+        video = EncodedVideo.from_path(path)
+        video_data = video.get_clip(0, video.duration)
 
-        video_data = video.get_clip(start_sec=start_sec, end_sec=end_sec)
-        # Apply a transform to normalize the video input
-        video_data = self.transforms(video_data)
-        # Move the inputs to the desired device
-        frames = video_data["video"]
-
+        if self.transforms:
+            video_data = self.transforms(video_data)
+        
+        frames = video_data['video']
         return frames, labels, idx, dict()
 
     

@@ -23,6 +23,7 @@ train = ActionDataset(
         num_frames=CFG.num_frames
     )
 
+print(train)
 
 # ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #        Test metric             DataLoader 0
