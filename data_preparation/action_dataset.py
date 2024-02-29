@@ -12,6 +12,7 @@ from data_preparation.PackPathwayTransform import PackPathway
 from torch.utils.data import Dataset
 
 from data_preparation.actions import Action
+from util import get_video_clip_and_resize
 
 
 mp_holistic = mp.solutions.holistic # Holistic model
@@ -56,10 +57,8 @@ class ActionDataset(Dataset):
         print(f"Labels: {labels}")
         video = EncodedVideo.from_path(path)
         total_duration = int(video.duration)
-        
-        print(f"Video duration: {video.duration} {total_duration}")
-        video_data = video.get_clip(0, total_duration)
-        print(f"Video: {video_data}")
+        video_data = get_video_clip_and_resize(video_path=path, start_sec=0, end_sec= total_duration)
+
 
         if self.transforms:
             video_data = self.transforms(video_data)
