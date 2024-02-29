@@ -1,3 +1,4 @@
+import os
 from pytorchvideo.data.encoded_video import EncodedVideo
 from data_preparation.actions import Action
 import cv2
@@ -8,8 +9,7 @@ from torchvision import transforms
 from data_preparation.config import CFG  # Ensure this import matches your project structure
 from data_preparation.PackPathwayTransform import PackPathway
 from data_preparation.util import get_transformer,get_new_transformer  # Ensure this import matches your project structure
-from data_preparation.util_2 import get_video_clip_and_resize  # Ensure this import matches your project structure
-
+from data_preparation.util_2 import  get_video_clip_and_resize # Ensure this import matches your project structure
 
 # Assuming device setup as before
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -18,8 +18,12 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Prepare video capture
 video_path = 'data_preparation/actions/foot and ankle examination/2024-02-14 15-56-41.mp4'
-video = EncodedVideo.from_path(video_path, decode_audio=False)
-video_data = get_video_clip_and_resize(video_path=video_path, start_sec=0, end_sec= int(video.duration))
+
+cap = cv2.VideoCapture(video_path)
+# Define the codec and create VideoWriter object to save the video
+new_path = get_video_clip_and_resize(video_path)
+video = EncodedVideo.from_path(new_path)
+video_data = video.get_clip(start_sec=0, end_sec= int(video.duration))
 
 print(f"video data  {video_data}")
 

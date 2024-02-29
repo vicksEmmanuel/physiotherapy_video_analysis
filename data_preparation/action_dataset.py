@@ -55,22 +55,16 @@ class ActionDataset(Dataset):
 
         labels = self.convert_action_to_numpy(self.all_videos[idx][1])
         print(f"Labels: {labels}")
-        video = EncodedVideo.from_path(path)
-        total_duration = int(video.duration)
-        video_data = get_video_clip_and_resize(video_path=path, start_sec=0, end_sec= total_duration)
 
-        # Convert the NumPy array to a torch tensor and permute to (C, T, H, W)
-        video_data_tensor = torch.from_numpy(video_data).permute(3, 0, 1, 2).float()
-        
-        # Normalize the tensor if it's not already done
-        video_data_tensor = video_data_tensor / 255.0 if not self.transforms else video_data_tensor
-        
-        # Now wrap it in a dictionary to be compatible with PyTorchVideo transforms
-        video_data_dict = {'video': video_data_tensor}
-        
+        new_path = get_video_clip_and_resize(path)
+        video = EncodedVideo.from_path(new_path)
+        total_duration = int(video.duration)
+
+        print(f"Video duration: {video.duration} {total_duration}")
+        video_data = video.get_clip(start_sec=0, end_sec=total_duration)
+
         if self.transforms:
-            # Apply transformations which now expects a dict and can process the tensor
-            video_data_dict = self.transforms(video_data_dict)
+            video_data = self.transforms(video_data)
 
         print(frames)
 
