@@ -1,4 +1,13 @@
-import random
+
+
+import numpy as np
+from torch.utils.data import DataLoader,random_split
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+
+from typing import Dict
+import json
+import urllib
 from torchvision.transforms import Compose, Lambda
 from torchvision.transforms._transforms_video import (
     CenterCropVideo,
@@ -11,15 +20,15 @@ from pytorchvideo.transforms import (
     UniformTemporalSubsample,
     UniformCropVideo
 ) 
-import numpy as np
-import torch
-from torch.utils.data import DataLoader,random_split
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
+
+
 import cv2
 from data_preparation.PackPathwayTransform import PackPathway
 from data_preparation.config import *
 from data_preparation.action_dataset import ActionDataset
+
+
+
 
 
 
@@ -84,7 +93,7 @@ def get_transformer(phase):
 
 def get_loader(batch_size=4, num_workers=8, phase='train'):
     dataset = ActionDataset(
-        transforms=get_transformer(phase=phase),
+        transforms=get_new_transformer(phase=phase),
         num_frames=CFG.num_frames
     )
 
