@@ -23,9 +23,6 @@ cap = cv2.VideoCapture(video_path)
 # Define the codec and create VideoWriter object to save the video
 new_path = get_video_clip_and_resize(video_path)
 video = EncodedVideo.from_path(new_path)
-video_data = video.get_clip(start_sec=0, end_sec= int(video.duration))
-
-print(f"video data  {video_data}")
 
 # Load your trained SlowFast model
 model = SlowFast.load_from_checkpoint("checkpoints/last.ckpt")
