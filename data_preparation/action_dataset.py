@@ -53,12 +53,19 @@ class ActionDataset(Dataset):
         frames = []
 
         labels = self.convert_action_to_numpy(self.all_videos[idx][1])
+        print(f"Labels: {labels}")
         video = EncodedVideo.from_path(path)
-        video_data = video.get_clip(0, video.duration)
+        total_duration = int(video.duration)
+        print(f"Video: {video}")
+        print(f"Video duration: {video.duration} {total_duration}")
+        video_data = video.get_clip(0, total_duration)
+        print(f"Video: {video_data}")
 
         if self.transforms:
             video_data = self.transforms(video_data)
-        
+
+        print(frames)
+
         frames = video_data['video']
         return frames, labels, idx, dict()
 
