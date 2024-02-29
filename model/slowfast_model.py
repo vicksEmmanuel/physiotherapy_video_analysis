@@ -25,7 +25,7 @@ class SlowFast(LightningModule):
         #     model_num_class=self.kinetick_classes,
         #     dropout_rate=self.drop_prob,
         # )
-
+        print("loading")
         self.slowfast = torch.hub.load('facebookresearch/pytorchvideo', 'slowfast_r50', pretrained=True)
         # Access the final classification layer (proj) in the ResNetBasicHead
         print("done1")
