@@ -145,7 +145,7 @@ for time_stamp in time_stamp_range:
 
     post_act = torch.nn.Softmax(dim=1)
     preds = post_act(preds)
-    top_preds = preds.topk(k=1)
+    top_preds = preds.topk(k=3)
     pred_classes = top_preds.indices[0]
     confidences = top_preds.values[0]  # Get the confidence values of the top predictions
     confidence_threshold = 0.5
