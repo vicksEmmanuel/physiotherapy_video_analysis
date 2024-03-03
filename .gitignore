@@ -9,3 +9,8 @@ __pycache__/
 __pycache__/*
 videos/*_resized.mp4
 *_resized.mp4
+data_preparation/__pycache__/action_dataset.cpython-311.pyc
+data_preparation/__pycache__/actions.cpython-311.pyc
+data_preparation/__pycache__/config.cpython-311.pyc
+data_preparation/__pycache__/util.cpython-311.pyc
+model/__pycache__/slowfast_model.cpython-311.pyc
