@@ -15,7 +15,7 @@ from data_preparation.util_2 import  get_video_clip_and_resize # Ensure this imp
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Prepare video capture
-video_path = 'data_preparation/actions/facial symmetry/2024-02-14 16-46-02.mp4'
+video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31.mp4'
 
 cap = cv2.VideoCapture(video_path)
 # Define the codec and create VideoWriter object to save the video
@@ -49,7 +49,7 @@ for start_sec in range(0, total_duration):
         outputs = model(frames)
         post_act = torch.nn.Softmax(dim=1)
         preds = post_act(outputs)
-        top_preds = preds.topk(k=10)
+        top_preds = preds.topk(k=1)
         pred_classes = top_preds.indices[0]
         confidences = top_preds.values[0]  # Get the confidence values of the top predictions
 
