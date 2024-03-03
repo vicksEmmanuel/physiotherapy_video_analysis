@@ -14,10 +14,8 @@ from data_preparation.util_2 import  get_video_clip_and_resize # Ensure this imp
 # Assuming device setup as before
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-
-
 # Prepare video capture
-video_path = 'data_preparation/actions/knee examination/2024-02-14 16-42-51.mp4'
+video_path = 'data_preparation/actions/facial symmetry/2024-02-14 16-46-02.mp4'
 
 cap = cv2.VideoCapture(video_path)
 # Define the codec and create VideoWriter object to save the video
