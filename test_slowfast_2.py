@@ -27,10 +27,13 @@ model = SlowFast.load_from_checkpoint("checkpoints/last.ckpt")
 model.eval()
 model.to(device)
 
+print("Model loaded.")
+
 actions = Action().action
 label_map = {i: actions[i] for i in range(0, len(actions))}
 # video_visualizer = VideoVisualizer(len(Action().action), label_map, top_k=3, mode="thres",thres=0.5)
 
+print(f"Video action loaded. {actions}")
 
 cfg = get_cfg()
 cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
