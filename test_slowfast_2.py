@@ -18,7 +18,7 @@ from torchvision.transforms import functional as F
 from detectron2.utils.video_visualizer import VideoVisualizer
 import cv2
 
-from util import single_transformer
+from data_preparation.util import single_transformer
 
 
 video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31.mp4'
