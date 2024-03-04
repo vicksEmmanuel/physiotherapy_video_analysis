@@ -14,9 +14,7 @@ import numpy as np
 from data_preparation.util_2 import  get_video_clip_and_resize # Ensure this import matches your project structure
 from pytorchvideo.data.encoded_video import EncodedVideo
 import torch
-from torchvision.transforms import functional as F
 from detectron2.utils.video_visualizer import VideoVisualizer
-import cv2
 
 
 video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31.mp4'
@@ -110,14 +108,6 @@ def ava_inference_transform(
     return clip, torch.from_numpy(boxes), ori_boxes
 
 
-def crop_and_transform_frame(frame, box, size=256):
-    cropped_frame = F.crop(frame, *box)
-    resized_frame = F.resize(cropped_frame, [size, size])
-    # Normalize and other transformations as per your requirement
-    return resized_frame
-
-out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
-
 gif_imgs = []
 total_duration = int(encoded_vid.duration)  # Total duration in seconds
 
@@ -142,31 +132,61 @@ for start_sec in range(0, total_duration):
 
 
 
+    roi_clips = []
     for box in predicted_boxes:
-        roi_clip = [crop_and_transform_frame(frame, box) for frame in inp_imgs]
-        roi_clip_tensor = torch.stack(roi_clip, dim=0).unsqueeze(0).to(device) # Add batch dim
-        
-        with torch.no_grad():
-            outputs = model(roi_clip_tensor)
-            post_act = torch.nn.Softmax(dim=1)
-            preds = post_act(outputs)
-            top_preds = preds.topk(k=1)
-            pred_classes = top_preds.indices[0]
-            confidences = top_preds.values[0]
+        # Crop each frame in `inp_imgs` according to `box`
+        # Note: You'll need to implement `crop_frame_to_box` to handle the cropping based on your tensor format
+        cropped_frames = [ava_inference_transform(frame, box.numpy()) for frame in inp_imgs]
+        # Stack cropped frames to form a new clip tensor
+        roi_clip = torch.stack(cropped_frames, dim=0)
+        roi_clips.append(roi_clip)
 
-            actions_this_second = []
-            for idx, confidence in enumerate(confidences):
-                if confidence > 0.5:
-                    action_name = Action().action[int(pred_classes[idx])]
-                    actions_this_second.append(action_name)
-                else:
-                    actions_this_second.append("")  # Placeholder for low confidence predictions
 
-            print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
+    print(f"Predicted boxes chunks: {roi_clips}")
     
-        # # Annotate frame with action labels and bounding boxes
-        # annotated_frame = annotate_frame(frame, box, action_label) # Implement this
-        
-        # out.write(annotated_frame)  # Write frame to output video
+
+    # Preprocess clip and bounding boxes for video action recognition.
+    
+    inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
+    print(f"Inputs: {inputs}, Bounding boxes: {inp_boxes}")
+    
+    # Prepend data sample id for each bounding box.
+    # For more details refere to the RoIAlign in Detectron2
+    inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0],1), inp_boxes], dim=1)
+    print("Preprocessing done.")
+
+    # Generate actions predictions for the bounding boxes in the clip.
+    # The model here takes in the pre-processed video clip and the detected bounding boxes.
+    # @TODO: Check this well
+    # preds = video_model(inputs.unsqueeze(0).to(device), inp_boxes.to(device))
+    preds = model(inputs.unsqueeze(0).to(device), inp_boxes.to(device))
+    print(f"Preds: {preds}")
+    preds= preds.to('cpu')
+
+    post_act = torch.nn.Softmax(dim=1)
+    preds = post_act(preds)
+    top_preds = preds.topk(k=3)
+    pred_classes = top_preds.indices[0]
+    confidences = top_preds.values[0]  # Get the confidence values of the top predictions
+    confidence_threshold = 0.5
+
+    actions_this_second = []
+    for idx, confidence in enumerate(confidences):
+        if confidence > confidence_threshold:
+            action_name = Action().action[int(pred_classes[idx])]
+            actions_this_second.append(action_name)
+        else:
+            actions_this_second.append("")
+
+    print(f"Actions for second {end_sec}: {actions_this_second}")
+
+    # The model is trained on AVA and AVA labels are 1 indexed so, prepend 0 to convert to 0 index.
+    preds = torch.cat([torch.zeros(preds.shape[0],1), preds], dim=1)
+
+    # Plot predictions on the video and save for later visualization.
+    inp_imgs = inp_imgs.permute(1,2,3,0)
+    inp_imgs = inp_imgs/255.0
+    # out_img_pred = video_visualizer.draw_clip_range(inp_imgs, preds, predicted_boxes)
+    # gif_imgs += out_img_pred
 
 print("Finished generating predictions.")
