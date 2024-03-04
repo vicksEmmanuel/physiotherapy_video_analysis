@@ -128,15 +128,18 @@ for start_sec in range(0, total_duration):
 
     # Preprocess clip and bounding boxes for video action recognition.
     inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
+    print(f"Inputs: {inputs}, Bounding boxes: {inp_boxes}")
     # Prepend data sample id for each bounding box.
     # For more details refere to the RoIAlign in Detectron2
     inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0],1), inp_boxes], dim=1)
+    print("Preprocessing done.")
 
     # Generate actions predictions for the bounding boxes in the clip.
     # The model here takes in the pre-processed video clip and the detected bounding boxes.
     # @TODO: Check this well
     # preds = video_model(inputs.unsqueeze(0).to(device), inp_boxes.to(device))
     preds = model(inputs.unsqueeze(0).to(device), inp_boxes.to(device))
+    print(f"Preds: {preds}")
     preds= preds.to('cpu')
 
     post_act = torch.nn.Softmax(dim=1)
@@ -154,7 +157,7 @@ for start_sec in range(0, total_duration):
         else:
             actions_this_second.append("")
 
-    print(f"Actions for second {time_stamp}: {actions_this_second}")
+    print(f"Actions for second {end_sec}: {actions_this_second}")
 
     # The model is trained on AVA and AVA labels are 1 indexed so, prepend 0 to convert to 0 index.
     preds = torch.cat([torch.zeros(preds.shape[0],1), preds], dim=1)
