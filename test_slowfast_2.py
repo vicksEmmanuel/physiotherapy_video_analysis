@@ -1,6 +1,7 @@
 from data_preparation.actions import Action
 from model.slowfast_model import SlowFast  # Ensure this import matches your project structure
 from detectron2.config import get_cfg
+from pytorchvideo.models.hub import slow_r50_detection 
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
 from pytorchvideo.transforms.functional import (
@@ -129,9 +130,26 @@ for start_sec in range(0, total_duration):
         print(f"No person detected in second {start_sec} - {end_sec}.")
         continue
 
+
+
+    roi_clips = []
+    for box in predicted_boxes:
+        # Crop each frame in `inp_imgs` according to `box`
+        # Note: You'll need to implement `crop_frame_to_box` to handle the cropping based on your tensor format
+        cropped_frames = [ava_inference_transform(frame, box.numpy()) for frame in inp_imgs]
+        # Stack cropped frames to form a new clip tensor
+        roi_clip = torch.stack(cropped_frames, dim=0)
+        roi_clips.append(roi_clip)
+
+
+    print(f"Predicted boxes chunks: {roi_clips}")
+    
+
     # Preprocess clip and bounding boxes for video action recognition.
+    
     inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
     print(f"Inputs: {inputs}, Bounding boxes: {inp_boxes}")
+    
     # Prepend data sample id for each bounding box.
     # For more details refere to the RoIAlign in Detectron2
     inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0],1), inp_boxes], dim=1)
