@@ -104,20 +104,16 @@ def ava_inference_transform(
     return clip, torch.from_numpy(boxes), ori_boxes
 
 
-# Video predictions are generated at an internal of 1 sec from 90 seconds to 100 seconds in the video.
-time_stamp_range = range(90,100) # time stamps in video for which clip is sampled.
-clip_duration = 1.0 # Duration of clip used for each inference step.
 gif_imgs = []
+total_duration = int(encoded_vid.duration)  # Total duration in seconds
 
-for time_stamp in time_stamp_range:
-    print("Generating predictions for time stamp: {} sec".format(time_stamp))
+for start_sec in range(0, total_duration):
+    end_sec = start_sec + 1  # Process one second at a time
 
     # Generate clip around the designated time stamps
-    inp_imgs = encoded_vid.get_clip(
-        time_stamp - clip_duration/2.0, # start second
-        time_stamp + clip_duration/2.0  # end second
-    )
+    inp_imgs = encoded_vid.get_clip(start_sec=start_sec, end_sec=end_sec)
     inp_imgs = inp_imgs['video']
+    
 
     # Generate people bbox predictions using Detectron2's off the self pre-trained predictor
     # We use the the middle image in each clip to generate the bounding boxes.
@@ -127,7 +123,7 @@ for time_stamp in time_stamp_range:
     # Predicted boxes are of the form List[(x_1, y_1, x_2, y_2)]
     predicted_boxes = get_person_bboxes(inp_img, predictor)
     if len(predicted_boxes) == 0:
-        print("Skipping clip no frames detected at time stamp: ", time_stamp)
+        print(f"No person detected in second {start_sec} - {end_sec}.")
         continue
 
     # Preprocess clip and bounding boxes for video action recognition.
