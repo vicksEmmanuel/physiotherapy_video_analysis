@@ -145,7 +145,9 @@ for start_sec in range(0, total_duration):
     for box in predicted_boxes:
         roi_clip = [crop_and_transform_frame(frame, box) for frame in inp_imgs]
         roi_clip_tensor = torch.stack(roi_clip, dim=0).unsqueeze(0).to(device) # Add batch dim
-        
+
+        print(roi_clip_tensor)
+
         with torch.no_grad():
             outputs = model(roi_clip_tensor)
             post_act = torch.nn.Softmax(dim=1)
