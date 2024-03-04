@@ -60,6 +60,25 @@ def get_new_transformer(phase):
     return transform
 
 
+def single_transformer():
+    side_size = 256
+    mean = [0.45, 0.45, 0.45]
+    std = [0.225, 0.225, 0.225]
+    crop_size = 256
+    num_frames = 32
+    return Compose(
+            [
+                UniformTemporalSubsample(num_frames),
+                Lambda(lambda x: x/255.0),
+                NormalizeVideo(mean, std),
+                ShortSideScale(
+                    size=side_size
+                ),
+                CenterCropVideo(crop_size),
+                PackPathway()
+            ]
+        )
+
 def get_transformer(phase):
     valid_trans = A.Compose([
         A.Resize(height=CFG.height, width=CFG.width, interpolation=cv2.INTER_LINEAR), 

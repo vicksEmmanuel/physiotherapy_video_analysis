@@ -18,6 +18,8 @@ from torchvision.transforms import functional as F
 from detectron2.utils.video_visualizer import VideoVisualizer
 import cv2
 
+from util import single_transformer
+
 
 video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31.mp4'
 new_path = get_video_clip_and_resize(video_path)
@@ -113,8 +115,7 @@ def ava_inference_transform(
 def crop_and_transform_frame(frame, box, size=256):
     cropped_frame = F.crop(frame, *box)
     resized_frame = F.resize(cropped_frame, [size, size])
-    # Normalize and other transformations as per your requirement
-    return resized_frame
+    return single_transformer()(resized_frame)
 
 out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
 
@@ -141,9 +142,11 @@ for start_sec in range(0, total_duration):
         continue
 
 
-
+    
     for box in predicted_boxes:
         roi_clip = [crop_and_transform_frame(frame, box) for frame in inp_imgs]
+        roi_clip = [i.to(device)[None, ...] for i in roi_clip]
+
         roi_clip_tensor = torch.stack(roi_clip, dim=0).unsqueeze(0).to(device) # Add batch dim
 
         print(roi_clip_tensor)
