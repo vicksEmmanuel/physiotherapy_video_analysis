@@ -119,13 +119,32 @@ def crop_and_transform_frame(frame, box, size=256):
     # Calculate height and width from the bounding box
     height = bottom - top
     width = right - left
-    # Crop and resize the frame
-    cropped_frame = F.crop(frame, top, left, height, width)
-    resized_frame = F.resize(cropped_frame, [size, size])
-    # Convert PIL image to tensor and normalize
-    tensor_frame = to_tensor(resized_frame)
-    normalized_frame = F.normalize(tensor_frame, [0.45, 0.45, 0.45], [0.225, 0.225, 0.225])
+    # Crop the frame using the integer coordinates
+    # Check if frame is a PIL Image or already a tensor
+    if isinstance(frame, torch.Tensor):
+        # Assume frame is in CHW format
+        cropped_frame = frame[:, top:top+height, left:left+width]
+    else:
+        cropped_frame = F.crop(frame, top, left, height, width)
+
+    # Resize the cropped frame
+    # If cropped_frame is already a tensor, use torchvision.transforms.functional.resize
+    # Else, it's a PIL Image, use F.resize as before
+    if isinstance(cropped_frame, torch.Tensor):
+        resized_frame = F.resize(cropped_frame, [size, size], antialias=True)
+    else:
+        resized_frame = F.resize(cropped_frame, [size, size], antialias=True)
+    
+    # If the frame is already a tensor, normalize directly
+    if isinstance(resized_frame, torch.Tensor):
+        normalized_frame = F.normalize(resized_frame, [0.45, 0.45, 0.45], [0.225, 0.225, 0.225])
+    else:
+        # Convert PIL image to tensor and normalize
+        tensor_frame = F.to_tensor(resized_frame)
+        normalized_frame = F.normalize(tensor_frame, [0.45, 0.45, 0.45], [0.225, 0.225, 0.225])
+    
     return normalized_frame
+
 
 out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
 
