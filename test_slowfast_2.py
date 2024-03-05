@@ -38,6 +38,7 @@ encoded_vid = EncodedVideo.from_path(new_path)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # model = slow_r50_detection(True)
 model =  slow_r50_detection(True)
+print(model)
 in_features = model.blocks[-1].proj.in_features
 model.blocks[-1].proj = torch.nn.Linear(in_features, len(Action().action))
 
