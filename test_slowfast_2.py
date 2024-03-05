@@ -190,7 +190,7 @@ for start_sec in range(0, total_duration):
 
     
     for box in predicted_boxes:
-        cropped_frames = [crop_frame(frame, box) for frame in inp_imgs]
+        cropped_frames = [crop_tensor_frame(frame, box) for frame in inp_imgs]
         transformer = single_transformer()
         transformed_clips = [transformer(frame) for frame in cropped_frames]
         
