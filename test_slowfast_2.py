@@ -113,57 +113,6 @@ def ava_inference_transform(
 
     return clip, torch.from_numpy(boxes), ori_boxes
 
-
-def crop_and_transform_frame(frame, box, size=256):
-    # Ensure box coordinates are integers
-    top, left, bottom, right = map(int, box)
-    # Calculate height and width from the bounding box
-    height = bottom - top
-    width = right - left
-    # Crop the frame using the integer coordinates
-    # Check if frame is a PIL Image or already a tensor
-    if isinstance(frame, torch.Tensor):
-        # Assume frame is in CHW format
-        cropped_frame = frame[:, top:top+height, left:left+width]
-    else:
-        cropped_frame = F.crop(frame, top, left, height, width)
-
-    # Resize the cropped frame
-    # If cropped_frame is already a tensor, use torchvision.transforms.functional.resize
-    # Else, it's a PIL Image, use F.resize as before
-    if isinstance(cropped_frame, torch.Tensor):
-        resized_frame = F.resize(cropped_frame, [size, size], antialias=True)
-    else:
-        resized_frame = F.resize(cropped_frame, [size, size], antialias=True)
-    
-    # If the frame is already a tensor, normalize directly
-    if isinstance(resized_frame, torch.Tensor):
-        normalized_frame = F.normalize(resized_frame, [0.45, 0.45, 0.45], [0.225, 0.225, 0.225])
-    else:
-        # Convert PIL image to tensor and normalize
-        tensor_frame = F.to_tensor(resized_frame)
-        normalized_frame = F.normalize(tensor_frame, [0.45, 0.45, 0.45], [0.225, 0.225, 0.225])
-    
-    return normalized_frame
-
-def crop_tensor_frame(frame, box):
-    """
-    Crop a tensor frame to the specified bounding box.
-    
-    Parameters:
-    - frame: a tensor representing an image, expected shape [C, H, W]
-    - box: the bounding box coordinates (x1, y1, x2, y2)
-    
-    Returns:
-    - Cropped frame as a tensor.
-    """
-    # Convert box coordinates to integer pixel indices
-    x1, y1, x2, y2 = map(int, box)
-    # Crop the frame using tensor slicing
-    cropped_frame = frame[:, y1:y2, x1:x2]
-    return cropped_frame
-
-
 out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
 
 gif_imgs = []
@@ -188,38 +137,32 @@ for start_sec in range(0, total_duration):
         print(f"No person detected in second {start_sec} - {end_sec}.")
         continue
 
+    inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
+    inputs = [i.to(device)[None, ...] for i in inputs]
+
+    confidence_threshold = 0.5
+
+    with torch.no_grad():
+        outputs = model(inputs)
+        post_act = torch.nn.Softmax(dim=1)
+        preds = post_act(outputs)
+        top_preds = preds.topk(k=1)
+        pred_classes = top_preds.indices[0]
+        confidences = top_preds.values[0]  # Get the confidence values of the top predictions
+
+        actions_this_second = []
+        for idx, confidence in enumerate(confidences):
+            if confidence > confidence_threshold:
+                action_name = Action().action[int(pred_classes[idx])]
+                actions_this_second.append(action_name)
+            else:
+                actions_this_second.append("")
+
+        print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
+
 
     
-    for box in predicted_boxes:
-        cropped_frames = [crop_tensor_frame(frame, box) for frame in inp_imgs]
-        transformed_clips = [normalize_image(frame, mean=[0.45, 0.45, 0.45], std=[0.225, 0.225, 0.225]) for frame in cropped_frames]
-
-        new_transformed_clips = [i.to(device)[None, ...] for i in transformed_clips]
-        roi_clip_tensor = torch.stack(new_transformed_clips, dim=0).unsqueeze(0).to(device)  # Add batch dim
-
-        print(roi_clip_tensor)
-
-        with torch.no_grad():
-            outputs = model(roi_clip_tensor)
-            post_act = torch.nn.Softmax(dim=1)
-            preds = post_act(outputs)
-            top_preds = preds.topk(k=1)
-            pred_classes = top_preds.indices[0]
-            confidences = top_preds.values[0]
-
-            actions_this_second = []
-            for idx, confidence in enumerate(confidences):
-                if confidence > 0.5:
-                    action_name = Action().action[int(pred_classes[idx])]
-                    actions_this_second.append(action_name)
-                else:
-                    actions_this_second.append("")  # Placeholder for low confidence predictions
-
-            print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
     
-        # # Annotate frame with action labels and bounding boxes
-        # annotated_frame = annotate_frame(frame, box, action_label) # Implement this
-        
-        # out.write(annotated_frame)  # Write frame to output video
+   
 
 print("Finished generating predictions.")
