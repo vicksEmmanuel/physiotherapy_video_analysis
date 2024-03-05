@@ -54,7 +54,6 @@ def get_person_bboxes(inp_img, predictor):
     boxes = predictions.pred_boxes if predictions.has("pred_boxes") else None
     scores = predictions.scores if predictions.has("scores") else None
     classes = np.array(predictions.pred_classes.tolist() if predictions.has("pred_classes") else None)
-    # Ensure you have valid boxes before attempting to filter by person class and score
     if boxes is not None:
         predicted_boxes = boxes.tensor[np.logical_and(classes == 0, scores > 0.75)]
     else:
@@ -78,10 +77,12 @@ for start_sec in range(0, total_duration):
 
     # Generate people bbox predictions using Detectron2's off the self pre-trained predictor
     # We use the the middle image in each clip to generate the bounding boxes.
-    inp_img = inp_imgs[:,inp_imgs.shape[1]//2,:,:]
-    inp_img = inp_img.permute(1,2,0)
+    inp_img = inp_imgs[:, inp_imgs.shape[1]//2, :, :]
+    # Convert to HxWxC format expected by Detectron2 if inp_img is a tensor
+    if isinstance(inp_img, torch.Tensor):
+        inp_img = inp_img.permute(1, 2, 0).numpy()  # Ensure conversion to NumPy array
 
-    # Predicted boxes are of the form List[(x_1, y_1, x_2, y_2)]
+    # Now inp_img is ready to be passed to get_person_bboxes
     predicted_boxes = get_person_bboxes(inp_img, predictor)
     if len(predicted_boxes) == 0:
         print(f"No person detected in second {start_sec} - {end_sec}.")
