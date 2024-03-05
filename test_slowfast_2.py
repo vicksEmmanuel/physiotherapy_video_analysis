@@ -145,6 +145,9 @@ def crop_and_transform_frame(frame, box, size=256):
     
     return normalized_frame
 
+def crop_frame(frame, box):
+    cropped_frame = frame.crop(box)
+    return cropped_frame
 
 out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
 
@@ -173,10 +176,12 @@ for start_sec in range(0, total_duration):
 
     
     for box in predicted_boxes:
-        roi_clip = [crop_and_transform_frame(frame, box) for frame in inp_imgs]
-        roi_clip = [i.to(device)[None, ...] for i in roi_clip]
-
-        roi_clip_tensor = torch.stack(roi_clip, dim=0).unsqueeze(0).to(device) # Add batch dim
+        cropped_frames = [crop_frame(frame, box) for frame in inp_imgs]
+        transformer = single_transformer()
+        transformed_clips = [transformer(frame) for frame in cropped_frames]
+        
+        new_transformed_clips = [i.to(device)[None, ...] for i in transformed_clips]
+        roi_clip_tensor = torch.stack(new_transformed_clips, dim=0).unsqueeze(0).to(device) # Add batch dim
 
         print(roi_clip_tensor)
 
