@@ -39,12 +39,9 @@ encoded_vid = EncodedVideo.from_path(new_path)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = slow_r50_detection(True)
 print(model)
-model2 = SlowFastModel.create_slowfast_with_roi_head(
-    model_num_class=len(Action().action),
-    dropout_rate=0.5,
-)
+model = SlowFastModel.create_slowfast_with_roi_head()
 
-print(model2)
+print(model)
 
 model.eval()
 model.to(device)
@@ -159,7 +156,7 @@ for start_sec in range(0, total_duration):
     # The model here takes in the pre-processed video clip and the detected bounding boxes.
     preds = model(inputs.unsqueeze(0).to(device), inp_boxes.to(device))
 
-    print(f"Predictions for second {start_sec} - {end_sec}: {preds}")
+    # print(f"Predictions for second {start_sec} - {end_sec}: {preds}")
 
     preds= preds.to('cpu')
     # The model is trained on AVA and AVA labels are 1 indexed so, prepend 0 to convert to 0 index.
