@@ -191,7 +191,6 @@ for start_sec in range(0, total_duration):
     
     for box in predicted_boxes:
         cropped_frames = [crop_tensor_frame(frame, box) for frame in inp_imgs]
-        transformer = single_transformer()
         transformed_clips = [normalize(frame, mean=[0.45, 0.45, 0.45], std=[0.225, 0.225, 0.225]) for frame in cropped_frames]
 
         
