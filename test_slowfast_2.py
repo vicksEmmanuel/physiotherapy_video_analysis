@@ -35,7 +35,6 @@ new_path = get_video_clip_and_resize(video_path)
 encoded_vid = EncodedVideo.from_path(new_path)
 
 
-
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # model = slow_r50_detection(True)
 model =  slow_r50_detection(True)
