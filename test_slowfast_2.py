@@ -138,6 +138,7 @@ for start_sec in range(0, total_duration):
         continue
 
     inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
+    inputs = inputs.repeat(1, 3, 1, 1, 1)
     inputs = [i.to(device)[None, ...] for i in inputs]
 
     confidence_threshold = 0.5
