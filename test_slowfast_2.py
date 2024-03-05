@@ -34,7 +34,7 @@ encoded_vid = EncodedVideo.from_path(new_path)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # model = slow_r50_detection(True)
-model = SlowFastModel.create_slowfast(
+model = SlowFastModel.create_slowfast_with_roi_head(
         model_num_class=len(Action().action),
         dropout_rate=0.
     )
