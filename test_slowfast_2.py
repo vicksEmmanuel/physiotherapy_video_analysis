@@ -145,9 +145,23 @@ def crop_and_transform_frame(frame, box, size=256):
     
     return normalized_frame
 
-def crop_frame(frame, box):
-    cropped_frame = frame.crop(box)
+def crop_tensor_frame(frame, box):
+    """
+    Crop a tensor frame to the specified bounding box.
+    
+    Parameters:
+    - frame: a tensor representing an image, expected shape [C, H, W]
+    - box: the bounding box coordinates (x1, y1, x2, y2)
+    
+    Returns:
+    - Cropped frame as a tensor.
+    """
+    # Convert box coordinates to integer pixel indices
+    x1, y1, x2, y2 = map(int, box)
+    # Crop the frame using tensor slicing
+    cropped_frame = frame[:, y1:y2, x1:x2]
     return cropped_frame
+
 
 out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
 
