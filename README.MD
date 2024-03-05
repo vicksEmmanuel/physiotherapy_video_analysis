@@ -31,3 +31,35 @@ Where
 ```
 python data_preparation/action_dataset.py
 ```
+
+
+## Train Actions Dataset
+
+```
+python train_slowfast.py
+```
+
+### You'd get results like this
+
+```
+# 500 epochs
+
+# Testing DataLoader 0: 100%|███████████████████████████████████████████████████████████████████████████| 3/3 [00:12<00:00,  0.23it/s]
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#        Test metric             DataLoader 0
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#         test_acc             0.800000011920929
+#         test_loss           0.6259332895278931
+# ──────────────────────────────────────────────────────────────
+```
+
+
+## Test Action Dataset
+
+```
+video_path = 'videos/Postural Analysis Lateral.mp4'
+all_actions = generate_actions_from_video(video_path)
+print(all_actions)
+
+python3 test_slowfast.py
+```
