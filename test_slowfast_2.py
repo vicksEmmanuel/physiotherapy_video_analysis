@@ -38,17 +38,9 @@ encoded_vid = EncodedVideo.from_path(new_path)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # model = slow_r50_detection(True)
-model = SlowFastModel.create_slowfast_with_roi_head(
-    slowfast_channel_reduction_ratio=(8,),
-    input_channels=(3, 3),
-    model_depth=50,
-    model_num_class=len(Action().action),  # Number of action classes
-    dropout_rate=0.5,
-    norm=nn.BatchNorm3d,
-    activation=nn.ReLU,
-    stem_dim_outs=(64, 8),
-    # Other configurations as required...
-)
+model =  slow_r50_detection(True)
+in_features = model.blocks[-1].proj.in_features
+model.blocks[-1].proj = torch.nn.Linear(in_features, len(Action().action))
 
 model.eval()
 model.to(device)
