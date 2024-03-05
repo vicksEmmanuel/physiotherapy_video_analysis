@@ -46,7 +46,6 @@ model = SlowFastModel.create_slowfast_with_roi_head(
     dropout_rate=0.5,
     norm=nn.BatchNorm3d,
     activation=nn.ReLU,
-    stem_function=(create_res_basic_stem, create_res_basic_stem),
     stem_dim_outs=(64, 8),
     # Other configurations as required...
 )
