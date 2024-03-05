@@ -54,7 +54,7 @@ predictor = DefaultPredictor(cfg)
 
 
 def get_person_bboxes(inp_img, predictor):
-    predictions = predictor(inp_img.cpu().detach().numpy())['instances'].to('cpu')
+    predictions = predictor(inp_img.cpu().detach().numpy())['instances'].to(device)
     boxes = predictions.pred_boxes if predictions.has("pred_boxes") else None
     scores = predictions.scores if predictions.has("scores") else None
     classes = np.array(predictions.pred_classes.tolist() if predictions.has("pred_classes") else None)
