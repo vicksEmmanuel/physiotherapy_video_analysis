@@ -192,7 +192,8 @@ for start_sec in range(0, total_duration):
     for box in predicted_boxes:
         cropped_frames = [crop_tensor_frame(frame, box) for frame in inp_imgs]
         transformer = single_transformer()
-        transformed_clips = [transformer(frame) for frame in cropped_frames]
+        transformed_clips = [transformer(frame.unsqueeze(0)) for frame in cropped_frames]  # Add dummy batch dimension
+
         
         new_transformed_clips = [i.to(device)[None, ...] for i in transformed_clips]
         roi_clip_tensor = torch.stack(new_transformed_clips, dim=0).unsqueeze(0).to(device) # Add batch dim
