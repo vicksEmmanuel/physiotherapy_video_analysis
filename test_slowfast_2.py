@@ -20,6 +20,7 @@ from pytorchvideo.data.encoded_video import EncodedVideo
 import torch
 from torchvision.transforms import functional as F
 from detectron2.utils.video_visualizer import VideoVisualizer
+import pytorchvideo.models.slowfast as SlowFastModel
 import cv2
 
 from data_preparation.util import single_transformer
@@ -32,7 +33,11 @@ encoded_vid = EncodedVideo.from_path(new_path)
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = slow_r50_detection(True, num_classes=400)
+# model = slow_r50_detection(True)
+model = SlowFastModel.create_slowfast(
+        model_num_class=len(Action().action),
+        dropout_rate=0.
+    )
 model.eval()
 model.to(device)
 
