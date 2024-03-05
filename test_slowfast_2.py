@@ -1,3 +1,4 @@
+from torchvision.transforms.functional import to_tensor
 from data_preparation.actions import Action
 from model.slowfast_model import SlowFast  # Ensure this import matches your project structure
 from detectron2.config import get_cfg
@@ -113,9 +114,18 @@ def ava_inference_transform(
 
 
 def crop_and_transform_frame(frame, box, size=256):
-    cropped_frame = F.crop(frame, *box)
+    # Ensure box coordinates are integers
+    top, left, bottom, right = map(int, box)
+    # Calculate height and width from the bounding box
+    height = bottom - top
+    width = right - left
+    # Crop and resize the frame
+    cropped_frame = F.crop(frame, top, left, height, width)
     resized_frame = F.resize(cropped_frame, [size, size])
-    return single_transformer()(resized_frame)
+    # Convert PIL image to tensor and normalize
+    tensor_frame = to_tensor(resized_frame)
+    normalized_frame = F.normalize(tensor_frame, [0.45, 0.45, 0.45], [0.225, 0.225, 0.225])
+    return normalized_frame
 
 out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
 
