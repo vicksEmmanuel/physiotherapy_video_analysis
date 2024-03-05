@@ -141,16 +141,17 @@ for start_sec in range(0, total_duration):
         continue
 
     inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
-    
-    inp_img_pil = Image.fromarray(inputs.byte().numpy())  # Convert to PIL Image
-    draw = ImageDraw.Draw(inp_img_pil) 
+    inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0],1), inp_boxes], dim=1)
 
+    # Generate actions predictions for the bounding boxes in the clip.
+    # The model here takes in the pre-processed video clip and the detected bounding boxes.
+    preds = model(inputs.unsqueeze(0).to(device), inp_boxes.to(device))
 
-    output_path = os.path.join("output_dir", f"frame_{start_sec}_{end_sec}.png")
-    inp_img_pil.save(output_path)
+    print(f"Predictions for second {start_sec} - {end_sec}: {preds}")
 
-
-    frames = [i.to(device)[None, ...] for i in inputs]
+    preds= preds.to('cpu')
+    # The model is trained on AVA and AVA labels are 1 indexed so, prepend 0 to convert to 0 index.
+    preds = torch.cat([torch.zeros(preds.shape[0],1), preds], dim=1)
 
 
     
