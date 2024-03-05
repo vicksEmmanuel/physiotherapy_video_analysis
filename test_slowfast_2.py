@@ -1,3 +1,4 @@
+from torchvision.transforms.functional import normalize as normalize_image
 from torchvision.transforms.functional import to_tensor
 from data_preparation.actions import Action
 from model.slowfast_model import SlowFast  # Ensure this import matches your project structure
@@ -191,11 +192,10 @@ for start_sec in range(0, total_duration):
     
     for box in predicted_boxes:
         cropped_frames = [crop_tensor_frame(frame, box) for frame in inp_imgs]
-        transformed_clips = [normalize(frame, mean=[0.45, 0.45, 0.45], std=[0.225, 0.225, 0.225]) for frame in cropped_frames]
+        transformed_clips = [normalize_image(frame, mean=[0.45, 0.45, 0.45], std=[0.225, 0.225, 0.225]) for frame in cropped_frames]
 
-        
         new_transformed_clips = [i.to(device)[None, ...] for i in transformed_clips]
-        roi_clip_tensor = torch.stack(new_transformed_clips, dim=0).unsqueeze(0).to(device) # Add batch dim
+        roi_clip_tensor = torch.stack(new_transformed_clips, dim=0).unsqueeze(0).to(device)  # Add batch dim
 
         print(roi_clip_tensor)
 
