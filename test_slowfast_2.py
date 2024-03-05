@@ -32,8 +32,7 @@ encoded_vid = EncodedVideo.from_path(new_path)
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = torch.hub.load('facebookresearch/pytorchvideo', 'slowfast_r50', pretrained=True)
-
+model = slow_r50_detection(True)
 model.eval()
 model.to(device)
 
