@@ -20,15 +20,23 @@ class SlowFast(LightningModule):
         self.load()
 
     def load(self):
-        self.slowfast = torch.hub.load('facebookresearch/pytorchvideo', 'slowfast_r50', pretrained=True)
-        final_layer = self.slowfast.blocks[-1]
-        num_features = final_layer.proj.in_features
-        print(num_features)
-        final_layer.proj = nn.Linear(num_features, self.num_classes)
+        self.slowfast = SlowFastModel.create_slowfast_with_roi_head(
+            slowfast_channel_reduction_ratio=(8,),
+            input_channels=(3, 3),
+            model_depth=50,
+            model_num_class=len(Action().action),  # Number of action classes
+            dropout_rate=0.5,
+            norm=nn.BatchNorm3d,
+            activation=nn.ReLU,
+            stem_function=(create_res_basic_stem, create_res_basic_stem),
+            stem_dim_outs=(64, 8),
+            # Other configurations as required...
+        )
 
-    def forward(self, x):
-        out = self.slowfast(x)
+    def forward(self, video_frames, bboxes=None):
+        out = self.slowfast(video_frames, bboxes)
         return out
+
     
     def configure_optimizers(self):
         learning_rate = 1e-4
