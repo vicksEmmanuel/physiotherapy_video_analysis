@@ -133,9 +133,6 @@ for start_sec in range(0, total_duration):
     inp_img = inp_imgs[:,inp_imgs.shape[1]//2,:,:]
     inp_img = inp_img.permute(1,2,0)
 
-    inp_img_pil = Image.fromarray(inp_img.byte().numpy())  # Convert to PIL Image
-    draw = ImageDraw.Draw(inp_img_pil) 
-
     # Predicted boxes are of the form List[(x_1, y_1, x_2, y_2)]
     predicted_boxes = get_person_bboxes(inp_img, predictor)
     if len(predicted_boxes) == 0:
@@ -143,17 +140,21 @@ for start_sec in range(0, total_duration):
         continue
 
 
-    for box in predicted_boxes:
-        # Convert tensor to list for drawing
-        box = box.tolist()
-        draw.rectangle(box, outline="red", width=3)
+    # for box in predicted_boxes:
+    #     # Convert tensor to list for drawing
+    #     box = box.tolist()
+    #     draw.rectangle(box, outline="red", width=3)
+
+    inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
     
-    # Display the image with the drawn bounding boxes
-    # inp_img_pil.show()
+    inp_img_pil = Image.fromarray(inputs.byte().numpy())  # Convert to PIL Image
+    draw = ImageDraw.Draw(inp_img_pil) 
+
+
     output_path = os.path.join("output_dir", f"frame_{start_sec}_{end_sec}.png")
     inp_img_pil.save(output_path)
 
-    inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
+
     frames = [i.to(device)[None, ...] for i in inputs]
 
 
