@@ -1,5 +1,4 @@
-
-
+from torchvision.transforms import Compose, Resize, Normalize, ToTensor
 import numpy as np
 from torch.utils.data import DataLoader,random_split
 import albumentations as A
@@ -78,6 +77,18 @@ def single_transformer():
                 PackPathway()
             ]
         )
+
+def preprocess_transformer(roi):
+    """
+    Preprocess the ROI for action recognition model input.
+    """
+    transform = Compose([
+        Resize((256, 256)),
+        ToTensor(),
+        Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+    return transform(roi).unsqueeze(0)  # Add batch dimension
+
 
 def get_transformer(phase):
     valid_trans = A.Compose([
