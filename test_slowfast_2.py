@@ -49,12 +49,18 @@ predictor = DefaultPredictor(cfg)
 
 
 def get_person_bboxes(inp_img, predictor):
-    predictions = predictor(inp_img.cpu().detach().numpy())['instances'].to('cpu')
+    # Since inp_img is already a numpy array, directly use it for prediction
+    predictions = predictor(inp_img)['instances'].to('cpu')
     boxes = predictions.pred_boxes if predictions.has("pred_boxes") else None
     scores = predictions.scores if predictions.has("scores") else None
     classes = np.array(predictions.pred_classes.tolist() if predictions.has("pred_classes") else None)
-    predicted_boxes = boxes[np.logical_and(classes==0, scores>0.75 )].tensor.cpu() # only person
+    # Ensure you have valid boxes before attempting to filter by person class and score
+    if boxes is not None:
+        predicted_boxes = boxes.tensor[np.logical_and(classes == 0, scores > 0.75)]
+    else:
+        predicted_boxes = []
     return predicted_boxes
+
 
 
 out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
