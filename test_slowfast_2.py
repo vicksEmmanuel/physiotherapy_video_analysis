@@ -192,7 +192,7 @@ for start_sec in range(0, total_duration):
     for box in predicted_boxes:
         cropped_frames = [crop_tensor_frame(frame, box) for frame in inp_imgs]
         transformer = single_transformer()
-        transformed_clips = [transformer(frame.unsqueeze(0)) for frame in cropped_frames]  # Add dummy batch dimension
+        transformed_clips = [normalize(frame, mean=[0.45, 0.45, 0.45], std=[0.225, 0.225, 0.225]) for frame in cropped_frames]
 
         
         new_transformed_clips = [i.to(device)[None, ...] for i in transformed_clips]
