@@ -144,7 +144,7 @@ for start_sec in range(0, total_duration):
 
 
     for frame_idx in range(inp_imgs.shape[1]):
-        inp_img = inp_imgs[:, frame_idx, :, :].permute(1, 2, 0).cpu().numpy()
+        inp_img = inp_imgs[:, frame_idx, :, :].permute(1, 2, 0).numpy()
         
         # Detect persons in the current frame
         predicted_boxes = get_person_bboxes(inp_img, predictor)
