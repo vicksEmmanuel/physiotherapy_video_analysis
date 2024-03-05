@@ -1,2 +1,4 @@
 checkpoints/** filter=lfs diff=lfs merge=lfs -text
 *.ckpt filter=lfs diff=lfs merge=lfs -text
+ava/frame_lists/val.csv filter=lfs diff=lfs merge=lfs -text
+ava/frame_lists/train.csv filter=lfs diff=lfs merge=lfs -text
