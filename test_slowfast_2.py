@@ -28,6 +28,8 @@ import pytorchvideo.models.slowfast as SlowFastModel
 import cv2
 
 from data_preparation.util import single_transformer
+from pytorchvideo.models.resnet import create_resnet, create_resnet_with_roi_head
+
 
 
 video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31.mp4'
@@ -39,7 +41,7 @@ encoded_vid = EncodedVideo.from_path(new_path)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = slow_r50_detection(True)
 print(model)
-model = SlowFastModel.create_slowfast_with_roi_head()
+model = create_resnet_with_roi_head(model_num_class=len(Action().action)),
 
 print(model)
 
