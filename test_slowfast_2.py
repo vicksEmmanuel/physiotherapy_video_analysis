@@ -39,9 +39,9 @@ encoded_vid = EncodedVideo.from_path(new_path)
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = slow_r50_detection(True)
-print(model)
-model = create_resnet_with_roi_head(model_num_class=len(Action().action)),
+# model = slow_r50_detection(True)
+# print(model)
+model = create_resnet_with_roi_head(model_num_class=len(Action().action))
 
 print(model)
 
