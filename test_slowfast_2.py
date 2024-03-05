@@ -32,7 +32,8 @@ encoded_vid = EncodedVideo.from_path(new_path)
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = SlowFast.load_from_checkpoint("checkpoints/last.ckpt")
+model = torch.hub.load('facebookresearch/pytorchvideo', 'slowfast_r50', pretrained=True)
+
 model.eval()
 model.to(device)
 
@@ -138,12 +139,6 @@ for start_sec in range(0, total_duration):
     if len(predicted_boxes) == 0:
         print(f"No person detected in second {start_sec} - {end_sec}.")
         continue
-
-
-    # for box in predicted_boxes:
-    #     # Convert tensor to list for drawing
-    #     box = box.tolist()
-    #     draw.rectangle(box, outline="red", width=3)
 
     inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
     
