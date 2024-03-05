@@ -36,12 +36,10 @@ video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31.mp4'
 new_path = get_video_clip_and_resize(video_path)
 encoded_vid = EncodedVideo.from_path(new_path)
 
-
-
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# model = slow_r50_detection(True)
+model = slow_r50_detection(True)
 # print(model)
-model = create_resnet_with_roi_head(model_num_class=len(Action().action))
+# model = create_resnet_with_roi_head(model_num_class=len(Action().action))
 
 print(model)
 
