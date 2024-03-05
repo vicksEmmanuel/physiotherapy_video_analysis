@@ -15,8 +15,6 @@ from data_preparation.util_2 import  get_video_clip_and_resize # Ensure this imp
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def generate_actions_from_video(video_path):
-    cap = cv2.VideoCapture(video_path)
-    # Define the codec and create VideoWriter object to save the video
     new_path = get_video_clip_and_resize(video_path)
     video = EncodedVideo.from_path(new_path)
 
