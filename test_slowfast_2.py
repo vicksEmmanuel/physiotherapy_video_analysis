@@ -20,7 +20,7 @@ from torchvision.transforms import functional as F
 from detectron2.utils.video_visualizer import VideoVisualizer
 import cv2
 
-from data_preparation.util import single_transformer
+from data_preparation.util import preprocess_transformer, single_transformer
 
 
 video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31.mp4'
@@ -31,6 +31,10 @@ encoded_vid = EncodedVideo.from_path(new_path)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = SlowFast.load_from_checkpoint("checkpoints/last.ckpt")
+
+video_model = slow_r50_detection()
+video_model = video_model.eval().to(device)
+
 model.eval()
 model.to(device)
 
@@ -113,6 +117,7 @@ def ava_inference_transform(
 
     return clip, torch.from_numpy(boxes), ori_boxes
 
+
 out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
 
 gif_imgs = []
@@ -137,29 +142,50 @@ for start_sec in range(0, total_duration):
         print(f"No person detected in second {start_sec} - {end_sec}.")
         continue
 
-    inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
-    inputs = inputs.repeat(1, 3, 1, 1, 1)
-    inputs = [i.to(device)[None, ...] for i in inputs]
 
-    confidence_threshold = 0.5
+    for frame_idx in range(inp_imgs.shape[1]):
+        inp_img = inp_imgs[:, frame_idx, :, :].permute(1, 2, 0).cpu().numpy()
+        
+        # Detect persons in the current frame
+        predicted_boxes = get_person_bboxes(inp_img, predictor)
+        
+        if len(predicted_boxes) == 0:
+            print(f"No person detected in frame {frame_idx} of second {start_sec}-{end_sec}.")
+            continue
 
-    with torch.no_grad():
-        outputs = model(inputs)
-        post_act = torch.nn.Softmax(dim=1)
-        preds = post_act(outputs)
-        top_preds = preds.topk(k=1)
-        pred_classes = top_preds.indices[0]
-        confidences = top_preds.values[0]  # Get the confidence values of the top predictions
+        # Process each detected person in the frame
+        for box in predicted_boxes:
+            x1, y1, x2, y2 = map(int, box)
+            # Crop the frame to the bounding box (ROI)
+            roi = inp_img[y1:y2, x1:x2]
+            
+            # Preprocess ROI for action recognition model
+            roi_preprocessed = preprocess_transformer(roi)
+            
+            inputs = [i.to(device)[None, ...] for i in roi_preprocessed]
+            confidence_threshold = 0.5
 
-        actions_this_second = []
-        for idx, confidence in enumerate(confidences):
-            if confidence > confidence_threshold:
-                action_name = Action().action[int(pred_classes[idx])]
-                actions_this_second.append(action_name)
-            else:
-                actions_this_second.append("")
+            with torch.no_grad():
+                outputs = model(inputs)
+                post_act = torch.nn.Softmax(dim=1)
+                preds = post_act(outputs)
+                top_preds = preds.topk(k=1)
+                pred_classes = top_preds.indices[0]
+                confidences = top_preds.values[0]  # Get the confidence values of the top predictions
 
-        print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
+                actions_this_second = []
+                for idx, confidence in enumerate(confidences):
+                    if confidence > confidence_threshold:
+                        action_name = Action().action[int(pred_classes[idx])]
+                        actions_this_second.append(action_name)
+                    else:
+                        actions_this_second.append("")
+
+                print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
+
+            
+            # Process action_pred as needed
+            print(f"Action predictions for person in frame {frame_idx} of second {start_sec}-{end_sec}: {action_pred}")
 
 
     
