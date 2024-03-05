@@ -157,8 +157,6 @@ for start_sec in range(0, total_duration):
 
     # Generate actions predictions for the bounding boxes in the clip.
     # The model here takes in the pre-processed video clip and the detected bounding boxes.
-    print(inputs.unsqueeze(0).to(device))
-    print(inp_boxes.to(device))
     preds = model(inputs.unsqueeze(0).to(device), inp_boxes.to(device))
 
     print(f"Predictions for second {start_sec} - {end_sec}: {preds}")
