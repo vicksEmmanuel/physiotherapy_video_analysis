@@ -26,10 +26,12 @@ class SlowFast(LightningModule):
         print(num_features)
         final_layer.proj = nn.Linear(num_features, self.num_classes)
 
-        self.slowfast = SlowFastModel.create_slowfast(
-            model_num_class=self.num_classes,
-            dropout_rate=self.drop_prob,
-        )
+        # self.slowfast = SlowFastModel.create_slowfast(
+        #     model_num_class=self.num_classes,
+        #     dropout_rate=self.drop_prob,
+        # )
+
+        
         # model_dict = self.slowfast.state_dict()
         # pretrained_dict = torch.hub.load('facebookresearch/pytorchvideo', 
         #                                  'slowfast_r50', 
