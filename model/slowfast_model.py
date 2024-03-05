@@ -20,29 +20,18 @@ class SlowFast(LightningModule):
         self.load()
 
     def load(self):
-        self.slowfast = torch.hub.load('facebookresearch/pytorchvideo', 'slowfast_r50', pretrained=True)
-        final_layer = self.slowfast.blocks[-1]
-        num_features = final_layer.proj.in_features
-        print(num_features)
-        final_layer.proj = nn.Linear(num_features, self.num_classes)
-
-        # self.slowfast = SlowFastModel.create_slowfast(
-        #     model_num_class=self.num_classes,
-        #     dropout_rate=self.drop_prob,
-        # )
-
-        
-        # model_dict = self.slowfast.state_dict()
-        # pretrained_dict = torch.hub.load('facebookresearch/pytorchvideo', 
-        #                                  'slowfast_r50', 
-        #                                  pretrained=True).state_dict()
-        
-        # pretrained_dict = {
-        #     k: v for k, v in pretrained_dict.items() 
-        #     if k in list(model_dict.keys()) and model_dict[k].shape == v.shape
-        # }
-        # model_dict.update(pretrained_dict) 
-        # self.slowfast.load_state_dict(model_dict)
+       self.slowfast = create_slowfast_with_roi_head(
+            slowfast_channel_reduction_ratio=(8,),
+            input_channels=(3, 3),
+            model_depth=50,
+            model_num_class=len(Action().action),  # Number of action classes
+            dropout_rate=0.5,
+            norm=nn.BatchNorm3d,
+            activation=nn.ReLU,
+            stem_function=(create_res_basic_stem, create_res_basic_stem),
+            stem_dim_outs=(64, 8),
+            # Other configurations as required...
+        )
 
 
     def forward(self, x):

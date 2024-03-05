@@ -13,6 +13,10 @@ from pytorchvideo.transforms.functional import (
     short_side_scale_with_boxes,
     clip_boxes_to_image,
 )
+import torch
+from torch.nn import functional as F
+from torch import nn
+from torchmetrics.functional import accuracy
 from torchvision.transforms._functional_video import normalize
 import numpy as np
 from data_preparation.util_2 import  get_video_clip_and_resize # Ensure this import matches your project structure
@@ -35,9 +39,18 @@ encoded_vid = EncodedVideo.from_path(new_path)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # model = slow_r50_detection(True)
 model = SlowFastModel.create_slowfast_with_roi_head(
-        model_num_class=len(Action().action),
-        dropout_rate=0.
-    )
+    slowfast_channel_reduction_ratio=(8,),
+    input_channels=(3, 3),
+    model_depth=50,
+    model_num_class=len(Action().action),  # Number of action classes
+    dropout_rate=0.5,
+    norm=nn.BatchNorm3d,
+    activation=nn.ReLU,
+    stem_function=(create_res_basic_stem, create_res_basic_stem),
+    stem_dim_outs=(64, 8),
+    # Other configurations as required...
+)
+
 model.eval()
 model.to(device)
 
