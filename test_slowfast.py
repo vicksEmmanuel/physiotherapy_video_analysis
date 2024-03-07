@@ -4,6 +4,7 @@ from data_preparation.actions import Action
 import cv2
 import torch
 import numpy as np
+from get_audio import get_audio
 from model.slowfast_model import SlowFast  # Ensure this import matches your project structure
 from torchvision import transforms
 from data_preparation.config import CFG  # Ensure this import matches your project structure
@@ -18,18 +19,22 @@ def generate_actions_from_video(video_path):
     new_path = get_video_clip_and_resize(video_path)
     video = EncodedVideo.from_path(new_path)
 
+    total_duration = int(video.duration)  # Total duration in seconds
+
+    audio_timestamps =  get_audio(video_path, total_duration=total_duration)
+
     # Load your trained SlowFast model
     model = SlowFast.load_from_checkpoint("checkpoints/last.ckpt")
     model.eval()
     model.to(device)
 
-    total_duration = int(video.duration)  # Total duration in seconds
     transform = get_new_transformer('test')
+    
     actions_per_second = []
 
-
-    for start_sec in range(0, total_duration):
-        end_sec = start_sec + 1  # Process one second at a time
+    for i in range(0,len(audio_timestamps)):
+        start_sec = audio_timestamps[i]["start"]
+        end_sec = audio_timestamps[i]["end"]
 
         # Get the clip for the current second
         video_data = video.get_clip(start_sec=start_sec, end_sec=end_sec)
@@ -60,18 +65,14 @@ def generate_actions_from_video(video_path):
             # Log or use the actions_this_second as needed
             if actions_this_second:  # Check if the list is not empty
                 print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
-                actions_per_second.append(actions_this_second)
+                actions_per_second.append({
+                    "actions": actions_this_second,
+                    "text": audio_timestamps[i]["text"],
+                })
             else:
                 print(f"No confident actions for second {start_sec}-{end_sec}.")
 
-            
-
-    # Log or use the actions_this_second as needed
-    print(f"Actions this second: {actions_this_second}")
-    actions_per_second.append(actions_this_second)
-
     return actions_per_second
-
 
 
 video_path = 'videos/Postural Analysis Lateral.mp4'
