@@ -8,13 +8,8 @@ fi
 
 for video in $(ls -A1 -U ${IN_DATA_DIR}/*)
 do
-  video_name=${video##*/}
-
-  if [[ $video_name = *".webm" ]]; then
-    video_name=${video_name::-5}
-  else
-    video_name=${video_name::-4}
-  fi
+  video_name=$(basename "$video" .webm)
+  video_name=$(basename "$video_name" .mp4)
 
   out_video_dir=${OUT_DATA_DIR}/${video_name}/
   mkdir -p "${out_video_dir}"

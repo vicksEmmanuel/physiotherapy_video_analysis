@@ -16,8 +16,14 @@ from torch.utils.data import Dataset
 
 from data_preparation.actions import Action
 from model.slowfast_model import SlowFast
+from pytorchvideo.data import Ava
+import pandas as pd
+import json
+from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
+from ava_preparation.ava_dataset_preparation import prepare_ava_dataset
 
-print(Action().action)
+
+# print(Action().action)
 
 
    # Plot the frame
@@ -27,31 +33,31 @@ def show_image(frame):
     plt.show(block=False)
     plt.pause(.1)
 
-train = ActionDataset(
-        transforms=get_new_transformer('train'),
-        num_frames=CFG.num_frames
-    )
+# train = ActionDataset(
+#         transforms=get_new_transformer('train'),
+#         num_frames=CFG.num_frames
+#     )
 
-print(train)
-batch = train.__getitem__(10)
-print(batch)
+# print(train)
+# batch = train.__getitem__(10)
+# print(batch)
 
-frames = batch[0]
-first_video_frames = frames[0]  # Access the first tensor in the list
+# frames = batch[0]
+# first_video_frames = frames[0]  # Access the first tensor in the list
 
-num_frames = first_video_frames.shape[1]
+# num_frames = first_video_frames.shape[1]
 
-# Select the first frame for visualization
-# Assuming the tensor has dimensions [C, F, H, W], select the first frame
-frame = first_video_frames[:, 0, :, :].detach().cpu().numpy()  # Convert to numpy
+# # Select the first frame for visualization
+# # Assuming the tensor has dimensions [C, F, H, W], select the first frame
+# frame = first_video_frames[:, 0, :, :].detach().cpu().numpy()  # Convert to numpy
 
-# Transpose the frame from [C, H, W] to [H, W, C] for plotting
-frame = np.transpose(frame, (1, 2, 0))
+# # Transpose the frame from [C, H, W] to [H, W, C] for plotting
+# frame = np.transpose(frame, (1, 2, 0))
 
-# Normalize the frame's pixel values to [0, 1] for correct visualization
-frame = (frame - frame.min()) / (frame.max() - frame.min())
+# # Normalize the frame's pixel values to [0, 1] for correct visualization
+# frame = (frame - frame.min()) / (frame.max() - frame.min())
 
-show_image(frame)
+# show_image(frame)
 
 # ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #        Test metric             DataLoader 0
@@ -69,3 +75,10 @@ show_image(frame)
 #         test_acc             0.800000011920929
 #         test_loss           0.6259332895278931
 # ──────────────────────────────────────────────────────────────
+
+# label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt')
+
+# # prepare_ava_dataset()
+
+# print(label_map)
+
