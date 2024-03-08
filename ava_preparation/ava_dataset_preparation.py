@@ -51,10 +51,10 @@ def prepare_ava_dataset(phase='train', config=CFG):
 
     prepared_frame_list = f"ava_preparation/frame_lists/{phase}.csv"
     with open(prepared_frame_list, 'w') as prepared_frame_list_file:
-        prepared_frame_list_file.write(f"original_vido_id video_id frame_id path labels\n")
+        prepared_frame_list_file.write(f"original_video_id video_id frame_id path labels\n")
 
         for i in range(0, len(json_array)):
-            video_id = json_array[i]['original_vido_id']
+            video_id = json_array[i]['original_video_id']
             for file in allFiles:
                 if video_id in file:
                     prepared_frame_list_file.write(f"{video_id} {video_id} {json_array[i]['frame_id']} ava/frames/{json_array[i]['path']}" + " \"\" \n")
