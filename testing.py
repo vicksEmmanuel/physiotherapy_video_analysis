@@ -81,7 +81,7 @@ def show_image(frame):
 
 # label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt')
 
-# # prepare_ava_dataset()
+prepare_ava_dataset()
 
 # print(label_map)
 
