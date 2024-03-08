@@ -1,3 +1,1 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1e3fac03272278a352b84a721ce7b74585b7b05ff5428d318aa99ce29c143529
-size 48
+original_video_id video_id frame_id path labels
