@@ -73,6 +73,8 @@ def prepare_ava_dataset(phase='train', config=CFG):
         transform=transform
     )
 
+
+    print(dataset)
    
 
     # All videos are of the form cthw and fps is 30
