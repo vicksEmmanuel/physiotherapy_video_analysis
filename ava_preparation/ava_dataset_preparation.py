@@ -1,3 +1,4 @@
+import torch
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 from data_preparation.actions import Action
@@ -20,6 +21,8 @@ def show_image(frame, boxes):
     ax.axis('off')  # Hide the axis
     
     H, W = frame.shape[:2]  # Height and Width of the frame
+
+
     for box in boxes:
         x_min, y_min, x_max, y_max = box
         # Scale the box coordinates to match the image dimensions
@@ -29,6 +32,22 @@ def show_image(frame, boxes):
     
     plt.show(block=False)
     plt.pause(.1)
+
+
+def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
+    # Calculate scale factors for width and height
+    width_scale = new_width / original_width
+    height_scale = new_height / original_height
+
+    # Adjust box coordinates
+    adjusted_boxes = boxes.copy()
+    adjusted_boxes[:, 0] = boxes[:, 0] * width_scale  # x1
+    adjusted_boxes[:, 2] = boxes[:, 2] * width_scale  # x2
+    adjusted_boxes[:, 1] = boxes[:, 1] * height_scale  # y1
+    adjusted_boxes[:, 3] = boxes[:, 3] * height_scale  # y2
+
+    return adjusted_boxes
+
 
 
 def prepare_ava_dataset(phase='train', config=CFG):
