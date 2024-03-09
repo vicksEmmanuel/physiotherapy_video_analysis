@@ -1,1 +1,7 @@
+<<<<<<< HEAD
+drop_prob: 0.0
+num_frames: 32
+num_classes: 60
+=======
 {}
+>>>>>>> 1aee1c94280d997c769a6fac8158bea0e1099a3f

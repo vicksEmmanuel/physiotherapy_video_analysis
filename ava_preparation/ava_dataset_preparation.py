@@ -50,6 +50,21 @@ def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
     return adjusted_boxes
 
 
+def visualize_ava_dataset(dataset):
+     # All videos are of the form cthw and fps is 30
+    # Clip is samples at time step = 2 secs in video
+    sample_1 = next(dataset)
+
+    frame = sample_1['video'][0]  # Access the first video in the batch
+
+    # frame = frame[:,inp_imgs.shape[1]//2,:,:]
+    # frame = frame.permute(1,2,0)
+    frame = frame[0, :, :].detach().cpu().numpy()
+    frame = (frame - frame.min()) / (frame.max() - frame.min())
+
+    boxes = sample_1['boxes']  # Retrieve bounding box data
+
+    show_image(frame, boxes)
 
 def prepare_ava_dataset(phase='train', config=CFG):
     ava_frame_list = f"ava/frame_lists/{phase}.csv"
@@ -97,26 +112,13 @@ def prepare_ava_dataset(phase='train', config=CFG):
     dataset = Ava(
         frame_paths_file=prepared_frame_list,
         frame_labels_file=frames_label_file_path,
-        clip_sampler=make_clip_sampler("random", 1.0),
+        clip_sampler=make_clip_sampler("random", 20.0),
         label_map_file=label_map_path,
-        # transform=get_new_transformer('train')
         transform=transform
     )
 
-    # All videos are of the form cthw and fps is 30
-    # Clip is samples at time step = 2 secs in video
-    sample_1 = next(dataset)
-
-    frame = sample_1['video'][0]  # Access the first video in the batch
-
-    # frame = frame[:,inp_imgs.shape[1]//2,:,:]
-    # frame = frame.permute(1,2,0)
-    frame = frame[0, :, :].detach().cpu().numpy()
-    frame = (frame - frame.min()) / (frame.max() - frame.min())
-
-    boxes = sample_1['boxes']  # Retrieve bounding box data
-
-    show_image(frame, boxes)
+    # Shows a picture of the first video in the dataset
+    # visualize_ava_dataset(dataset)
     
     loader = DataLoader(
         dataset, 
