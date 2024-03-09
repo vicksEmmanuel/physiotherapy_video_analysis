@@ -1,3 +1,4 @@
+from torchvision.transforms.functional import resize
 from torchvision.transforms import Compose, Resize, Normalize, ToTensor
 from torchvision.transforms._functional_video import normalize
 from pytorchvideo.transforms.functional import (
@@ -153,11 +154,28 @@ def ava_inference_transform(
 
     return clip, torch.from_numpy(boxes), ori_boxes
 
+def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
+    # Calculate scale factors for width and height
+    width_scale = new_width / original_width
+    height_scale = new_height / original_height
+
+    # Adjust box coordinates
+    adjusted_boxes = boxes.copy()
+    adjusted_boxes[:, 0] = boxes[:, 0] * width_scale  # x1
+    adjusted_boxes[:, 2] = boxes[:, 2] * width_scale  # x2
+    adjusted_boxes[:, 1] = boxes[:, 1] * height_scale  # y1
+    adjusted_boxes[:, 3] = boxes[:, 3] * height_scale  # y2
+
+    return adjusted_boxes
+
 def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean=[0.45, 0.45, 0.45], data_std=[0.225, 0.225, 0.225], slow_fast_alpha=None):
     clip = sample_dict["video"]
     boxes = np.array(sample_dict.get("boxes", []))
     ori_boxes = boxes.copy()
 
+
+    clip = resize(clip, (crop_size, crop_size))
+    boxes = adjust_boxes(boxes, clip.shape[2], clip.shape[3], crop_size, crop_size)
 
    # Image [0, 255] -> [0, 1].
     clip = uniform_temporal_subsample(clip, num_frames)

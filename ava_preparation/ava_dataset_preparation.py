@@ -22,6 +22,7 @@ def show_image(frame, boxes):
     
     H, W = frame.shape[:2]  # Height and Width of the frame
 
+    print(f"{H} {W}")
 
     for box in boxes:
         x_min, y_min, x_max, y_max = box
