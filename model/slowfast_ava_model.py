@@ -47,10 +47,11 @@ class SlowFastAva(LightningModule):
         boxes = selected_batch["boxes"]
         labels = selected_batch["labels"]
 
+        print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels}")
+
         outputs = self(video, boxes)
         loss = F.cross_entropy(outputs, labels)
-        # acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
-        acc = accuracy(output, labels,task="multiclass",num_classes=self.num_classes)
+        acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
         metrics = {"train_acc": acc, "train_loss": loss}
         
         self.log_dict(metrics, on_step=False, on_epoch=True)
@@ -64,7 +65,7 @@ class SlowFastAva(LightningModule):
 
         outputs = self(video, boxes)
         loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(output, labels,task="multiclass",num_classes=self.num_classes)
+        acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
 
         metrics = {"valid_acc": acc, "valid_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
@@ -77,8 +78,7 @@ class SlowFastAva(LightningModule):
         labels = selected_batch["labels"]
 
         loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(output, labels,task="multiclass",num_classes=self.num_classes)
-
+        acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
 
         metrics = {"test_acc": acc, "test_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
