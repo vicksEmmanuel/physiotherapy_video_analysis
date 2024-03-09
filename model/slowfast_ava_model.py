@@ -3,6 +3,7 @@ from torch import nn
 from pytorch_lightning import LightningModule
 import torch
 from torch.nn import functional as F
+import torch.nn as nn
 from torchmetrics.functional import accuracy
 
 class SlowFastAva(LightningModule):
@@ -20,6 +21,10 @@ class SlowFastAva(LightningModule):
         self.model = create_resnet_with_roi_head(
             model_num_class=self.num_classes,
             dropout_rate=self.drop_prob,
+            input_channel=3,
+            model_depth=50,
+            norm=nn.BatchNorm3d,
+            activation=nn.ReLU,
         )
 
     def forward(self, x, bboxes):
@@ -40,26 +45,27 @@ class SlowFastAva(LightningModule):
     def training_step(self, batch, batch_idx):
         print("Training step")
         x, y = batch[0], batch[1]
-        print(x)
+        
+        output = self(x['video'], y['bboxes'])
 
-        videos, bboxes, labels = batch
-        outputs = self(videos, bboxes)
-        loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
-
+        acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
+        loss = F.cross_entropy(output, y)
         metrics = {"train_acc": acc, "train_loss": loss}
+
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        videos, bboxes, labels = batch
-        outputs = self(videos, bboxes)
-        loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+        x, y = batch[0], batch[1]
+        
+        output = self(x['video'], y['bboxes']
 
-        metrics = {"valid_acc": acc, "valid_loss": loss}
+        acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
+        loss = F.cross_entropy(output, y)
+        metrics = {"train_acc": acc, "train_loss": loss}
+
         self.log_dict(metrics, on_step=False, on_epoch=True)
-        return metrics
+        return loss
 
     def test_step(self, batch, batch_idx):
         videos, bboxes, labels = batch

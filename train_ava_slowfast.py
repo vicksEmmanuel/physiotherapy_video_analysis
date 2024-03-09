@@ -37,13 +37,11 @@ def train(config):
 
     print("Loaders created")
     
-    # model = SlowFastAva(
-    #     drop_prob=config.drop_prob, 
-    #     num_frames=config.num_frames,
-    #     num_classes=length_of_actions
-    # )
-
-    model = SlowFast(drop_prob=config.drop_prob, num_frames=config.num_frames)
+    model = SlowFastAva(
+        drop_prob=config.drop_prob, 
+        num_frames=config.num_frames,
+        num_classes=length_of_actions
+    )
 
 
     checkpoint_callback = ModelCheckpoint(
@@ -56,8 +54,6 @@ def train(config):
         every_n_epochs=1, # Save checkpoint every epoch
         save_last=True, # Save the last model regardless of the monitored metric
     )
-
-    
 
     trainer = Trainer(
         # logger=wandb_logger,

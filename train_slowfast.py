@@ -60,7 +60,6 @@ def train(config):
     }
 
     print("Loaders created")
-    
     model = SlowFast(drop_prob=config.drop_prob, num_frames=config.num_frames)
 
     print(f"Model created: {model}")
@@ -75,8 +74,6 @@ def train(config):
         every_n_epochs=1, # Save checkpoint every epoch
         save_last=True, # Save the last model regardless of the monitored metric
     )
-
-    
 
     trainer = Trainer(
         # logger=wandb_logger,
