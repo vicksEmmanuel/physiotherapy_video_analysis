@@ -152,6 +152,9 @@ def ava_inference_transform(
         )
         clip = [slow_pathway, fast_pathway]
 
+    
+    
+
     return clip, torch.from_numpy(boxes), ori_boxes
 
 def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
