@@ -42,8 +42,6 @@ def train(config):
         num_classes=length_of_actions
     )
 
-    print(f"Model created: {model}")
-
     checkpoint_callback = ModelCheckpoint(
         dirpath='ava_checkpoints/', # Directory where the checkpoints will be saved
         filename='{epoch}-{val_loss:.2f}', # File name, which can include values from logging

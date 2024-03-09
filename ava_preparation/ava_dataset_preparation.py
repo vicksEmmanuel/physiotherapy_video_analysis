@@ -120,7 +120,7 @@ def prepare_ava_dataset(phase='train', config=CFG):
     
     loader = DataLoader(
         dataset, 
-        # batch_size=config.batch_size,
+        batch_size=config.batch_size,
         num_workers=config.num_workers,
     )
 
