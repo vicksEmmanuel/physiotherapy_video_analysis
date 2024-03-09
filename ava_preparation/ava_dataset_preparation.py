@@ -120,8 +120,6 @@ def prepare_ava_dataset(phase='train', config=CFG):
     # Shows a picture of the first video in the dataset
     visualize_ava_dataset(dataset)
 
-    check_dataset(dataset)
-    
     loader = DataLoader(
         dataset, 
         batch_size=config.batch_size,
