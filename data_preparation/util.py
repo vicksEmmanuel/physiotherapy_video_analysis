@@ -200,9 +200,15 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
         clip = [slow_pathway, fast_pathway]
     
 
+    boxes = torch.cat([torch.zeros(boxes.shape[0],1), boxes], dim=1)
+    clip = clip.unsqueeze(0)
+
+
     # Update sample_dict with transformed data
     transformed_sample_dict = sample_dict.copy()
     transformed_sample_dict["video"] = clip
+
+
     if len(boxes) > 0:
         transformed_sample_dict["boxes"] = torch.from_numpy(boxes).float()
     transformed_sample_dict["ori_boxes"] = ori_boxes

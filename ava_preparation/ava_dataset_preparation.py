@@ -37,14 +37,11 @@ def prepare_ava_dataset(phase='train', config=CFG):
     json_array = df.to_dict(orient='records')
     json_string = json.dumps(json_array)
 
-    print(json_string)
-
-
     ava_file_names_train_val = "ava/ava_file_names_trainval_v2.1.txt"
     with open(ava_file_names_train_val, 'r') as file:
         allFiles = file.read().splitlines()
         for i in range(0,5):
-            print(allFiles[i])
+            continue
 
 
     label_map_path = "ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt"
@@ -57,7 +54,7 @@ def prepare_ava_dataset(phase='train', config=CFG):
     with open(prepared_frame_list, 'r') as file:
         allFiles = file.read().splitlines()
         for i in range(0, len(allFiles)):
-            print(allFiles[i].split(' '))
+            continue
 
     if not os.path.exists(prepared_frame_list):
         with open(prepared_frame_list, 'w') as prepared_frame_list_file:
