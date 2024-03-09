@@ -25,14 +25,6 @@ def train(config):
 
     print("Training begins:")
 
-    prepare_ava_dataset('train',  config=config)
-
-    print("Train Dataset prepared")
-
-    prepare_ava_dataset('val',  config=config)
-
-    print("Val Dataset prepared")
-
     loaders = {
         p: prepare_ava_dataset(p,  config=config)
             for p in [ 'train', 'val'] 
