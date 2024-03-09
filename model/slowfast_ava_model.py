@@ -23,10 +23,6 @@ class SlowFastAva(LightningModule):
         )
 
     def forward(self, x, bboxes):
-        print("Forward")
-        print(x)
-        print("Boxes")
-        print(bboxes)
         return self.model(x, bboxes)
 
     def configure_optimizers(self):
@@ -43,7 +39,9 @@ class SlowFastAva(LightningModule):
 
     def training_step(self, batch, batch_idx):
         print("Training step")
-        print(batch)
+        x, y = batch[0], batch[1]
+        print(x)
+
         videos, bboxes, labels = batch
         outputs = self(videos, bboxes)
         loss = F.cross_entropy(outputs, labels)
