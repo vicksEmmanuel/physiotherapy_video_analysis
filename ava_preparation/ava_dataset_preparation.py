@@ -54,8 +54,8 @@ def prepare_ava_dataset(phase='train', config=CFG):
 
     with open(prepared_frame_list, 'r') as file:
         allFiles = file.read().splitlines()
-        for i in range(0,5):
-            print(allFiles[i])
+        for i in range(0, len(allFiles)):
+            print(allFiles[i].split(' '))
 
     if not os.path.exists(prepared_frame_list):
         with open(prepared_frame_list, 'w') as prepared_frame_list_file:
