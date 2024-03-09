@@ -37,6 +37,8 @@ def prepare_ava_dataset(phase='train', config=CFG):
     json_array = df.to_dict(orient='records')
     json_string = json.dumps(json_array)
 
+    print(json_string)
+
 
     ava_file_names_train_val = "ava/ava_file_names_trainval_v2.1.txt"
     with open(ava_file_names_train_val, 'r') as file:
