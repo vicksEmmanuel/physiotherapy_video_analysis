@@ -1,3 +1,7 @@
 drop_prob: 0.0
 num_frames: 32
+<<<<<<< HEAD
+num_classes: 60
+=======
 num_classes: 300
+>>>>>>> ceddf6cb00d9283890a78ea83f636ef3c32195b2
