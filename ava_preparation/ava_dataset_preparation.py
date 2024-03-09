@@ -103,10 +103,6 @@ def prepare_ava_dataset(phase='train', config=CFG):
         transform=transform
     )
 
-
-    print(dataset)
-   
-
     # All videos are of the form cthw and fps is 30
     # Clip is samples at time step = 2 secs in video
     sample_1 = next(dataset)
@@ -124,7 +120,7 @@ def prepare_ava_dataset(phase='train', config=CFG):
     
     loader = DataLoader(
         dataset, 
-        batch_size=config.batch_size,
+        # batch_size=config.batch_size,
         num_workers=config.num_workers,
     )
 
