@@ -52,6 +52,11 @@ def prepare_ava_dataset(phase='train', config=CFG):
 
     prepared_frame_list = f"ava_preparation/frame_lists/{phase}.csv"
 
+    with open(prepared_frame_list, 'r') as file:
+        allFiles = file.read().splitlines()
+        for i in range(0,5):
+            print(allFiles[i])
+
     if not os.path.exists(prepared_frame_list):
         with open(prepared_frame_list, 'w') as prepared_frame_list_file:
             prepared_frame_list_file.write(f"original_vido_id video_id frame_id path labels\n")
