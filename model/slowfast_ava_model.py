@@ -38,32 +38,30 @@ class SlowFastAva(LightningModule):
             sch.step(self.trainer.callback_metrics["valid_loss"])
 
     def training_step(self, batch, batch_idx):
-        print("Training step")
-        print(batch)
-        videos, bboxes, labels = batch
-        outputs = self(videos, bboxes)
-        loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
+        outputs = self(batch["video"], batch["boxes"])
+        loss = F.cross_entropy(outputs, batch["label"])
+        # acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+        acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
         metrics = {"train_acc": acc, "train_loss": loss}
+        
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        videos, bboxes, labels = batch
-        outputs = self(videos, bboxes)
-        loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+        outputs = self(batch["video"], batch["boxes"])
+        loss = F.cross_entropy(outputs, batch["label"])
+        acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
 
         metrics = {"valid_acc": acc, "valid_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return metrics
 
     def test_step(self, batch, batch_idx):
-        videos, bboxes, labels = batch
-        outputs = self(videos, bboxes)
-        loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+        outputs = self(batch["video"], batch["boxes"])
+        loss = F.cross_entropy(outputs, batch["label"])
+        acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
+
 
         metrics = {"test_acc": acc, "test_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
