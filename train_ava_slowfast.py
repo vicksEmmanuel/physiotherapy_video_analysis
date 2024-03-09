@@ -16,6 +16,7 @@ from torch.utils.data import Dataset
 
 from data_preparation.actions import Action
 from model.slowfast_ava_model import SlowFastAva
+from model.slowfast_model import SlowFast
 from ava_preparation.ava_dataset_preparation import prepare_ava_dataset
 from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 
@@ -36,11 +37,14 @@ def train(config):
 
     print("Loaders created")
     
-    model = SlowFastAva(
-        drop_prob=config.drop_prob, 
-        num_frames=config.num_frames,
-        num_classes=length_of_actions
-    )
+    # model = SlowFastAva(
+    #     drop_prob=config.drop_prob, 
+    #     num_frames=config.num_frames,
+    #     num_classes=length_of_actions
+    # )
+
+    model = SlowFast(drop_prob=config.drop_prob, num_frames=config.num_frames)
+
 
     checkpoint_callback = ModelCheckpoint(
         dirpath='ava_checkpoints/', # Directory where the checkpoints will be saved
