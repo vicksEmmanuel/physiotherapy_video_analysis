@@ -38,7 +38,7 @@ class SlowFastAva(LightningModule):
             sch.step(self.trainer.callback_metrics["valid_loss"])
 
     def training_step(self, batch, batch_idx):
-        print(f"Batch: {batch_idx}, {batch['video'].shape}, {batch['boxes'].shape}, {batch['labels'].shape}")
+        print(f"Batch: {batch_idx}, {batch['video'].shape}, {batch['boxes'].shape}, {batch['labels']}")
 
         outputs = self(batch["video"], batch["boxes"])
         loss = F.cross_entropy(outputs, batch["labels"])
