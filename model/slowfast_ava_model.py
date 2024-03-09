@@ -46,6 +46,7 @@ class SlowFastAva(LightningModule):
         video = selected_batch["video"]
         boxes = selected_batch["boxes"]
         labels = selected_batch["labels"]
+        labels = torch.tensor(labels, dtype=torch.long)
 
         print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels}")
 
@@ -62,6 +63,7 @@ class SlowFastAva(LightningModule):
         video = selected_batch["video"]
         boxes = selected_batch["boxes"]
         labels = selected_batch["labels"]
+        labels = torch.tensor(labels, dtype=torch.long)
 
         outputs = self(video, boxes)
         loss = F.cross_entropy(outputs, labels)
@@ -76,6 +78,8 @@ class SlowFastAva(LightningModule):
         video = selected_batch["video"]
         boxes = selected_batch["boxes"]
         labels = selected_batch["labels"]
+        labels = torch.tensor(labels, dtype=torch.long)
+
 
         loss = F.cross_entropy(outputs, labels)
         acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
