@@ -21,7 +21,7 @@ class SlowFastAva(LightningModule):
             model_num_class=self.num_classes,
             dropout_rate=self.drop_prob,
             input_channel=3, # RGB input from Kinetics
-            model_depth=50, # For the tutorial let's just use a 50 layer network
+            model_depth=50,
             norm=nn.BatchNorm3d,
             activation=nn.ReLU,
         )
@@ -42,6 +42,7 @@ class SlowFastAva(LightningModule):
             sch.step(self.trainer.callback_metrics["valid_loss"])
 
     def training_step(self, batch, batch_idx):
+        print(f"Batch: {batch[batch_idx]}")
         print(f"Batch: {batch_idx}, {batch['video'].shape}, {batch['boxes'].shape}, {batch['labels']}")
 
         outputs = self(batch["video"].uns, batch["boxes"])
