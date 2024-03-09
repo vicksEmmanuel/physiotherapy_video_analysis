@@ -38,10 +38,10 @@ class SlowFastAva(LightningModule):
             sch.step(self.trainer.callback_metrics["valid_loss"])
 
     def training_step(self, batch, batch_idx):
-        print(f"Batch: {batch_idx}, {batch['video'].shape}, {batch['boxes'].shape}, {batch['label'].shape}")
+        print(f"Batch: {batch_idx}, {batch['video'].shape}, {batch['boxes'].shape}, {batch['labels'].shape}")
 
         outputs = self(batch["video"], batch["boxes"])
-        loss = F.cross_entropy(outputs, batch["label"])
+        loss = F.cross_entropy(outputs, batch["labels"])
         # acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
         acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
         metrics = {"train_acc": acc, "train_loss": loss}
@@ -51,7 +51,7 @@ class SlowFastAva(LightningModule):
 
     def validation_step(self, batch, batch_idx):
         outputs = self(batch["video"], batch["boxes"])
-        loss = F.cross_entropy(outputs, batch["label"])
+        loss = F.cross_entropy(outputs, batch["labels"])
         acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
 
         metrics = {"valid_acc": acc, "valid_loss": loss}
@@ -60,7 +60,7 @@ class SlowFastAva(LightningModule):
 
     def test_step(self, batch, batch_idx):
         outputs = self(batch["video"], batch["boxes"])
-        loss = F.cross_entropy(outputs, batch["label"])
+        loss = F.cross_entropy(outputs, batch["labels"])
         acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
 
 
