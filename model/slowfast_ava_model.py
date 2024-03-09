@@ -42,31 +42,42 @@ class SlowFastAva(LightningModule):
             sch.step(self.trainer.callback_metrics["valid_loss"])
 
     def training_step(self, batch, batch_idx):
-        print(f"Batch: {batch[batch_idx]}")
-        print(f"Batch: {batch_idx}, {batch['video'].shape}, {batch['boxes'].shape}, {batch['labels']}")
+        selected_batch = batch[batch_idx]
+        video = selected_batch["video"]
+        boxes = selected_batch["boxes"]
+        labels = selected_batch["labels"]
 
-        outputs = self(batch["video"].uns, batch["boxes"])
-        loss = F.cross_entropy(outputs, batch["labels"])
+        outputs = self(video, boxes)
+        loss = F.cross_entropy(outputs, labels)
         # acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
-        acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
+        acc = accuracy(output, labels,task="multiclass",num_classes=self.num_classes)
         metrics = {"train_acc": acc, "train_loss": loss}
         
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        outputs = self(batch["video"], batch["boxes"])
-        loss = F.cross_entropy(outputs, batch["labels"])
-        acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
+        selected_batch = batch[batch_idx]
+        video = selected_batch["video"]
+        boxes = selected_batch["boxes"]
+        labels = selected_batch["labels"]
+
+        outputs = self(video, boxes)
+        loss = F.cross_entropy(outputs, labels)
+        acc = accuracy(output, labels,task="multiclass",num_classes=self.num_classes)
 
         metrics = {"valid_acc": acc, "valid_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return metrics
 
     def test_step(self, batch, batch_idx):
-        outputs = self(batch["video"], batch["boxes"])
-        loss = F.cross_entropy(outputs, batch["labels"])
-        acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
+        selected_batch = batch[batch_idx]
+        video = selected_batch["video"]
+        boxes = selected_batch["boxes"]
+        labels = selected_batch["labels"]
+
+        loss = F.cross_entropy(outputs, labels)
+        acc = accuracy(output, labels,task="multiclass",num_classes=self.num_classes)
 
 
         metrics = {"test_acc": acc, "test_loss": loss}
