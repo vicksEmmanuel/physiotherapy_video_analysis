@@ -58,7 +58,7 @@ class SlowFastAva(LightningModule):
     def validation_step(self, batch, batch_idx):
         x, y = batch[0], batch[1]
         
-        output = self(x['video'], y['bboxes']
+        output = self(x['video'], y['bboxes'])
 
         acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
         loss = F.cross_entropy(output, y)
