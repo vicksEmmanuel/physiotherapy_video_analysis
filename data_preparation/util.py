@@ -159,6 +159,7 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
     ori_boxes = boxes.copy()
 
 
+   # Image [0, 255] -> [0, 1].
     clip = uniform_temporal_subsample(clip, num_frames)
     clip = clip.float()
     clip = clip / 255.0
@@ -167,13 +168,15 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
     # The format of boxes is [x1, y1, x2, y2]. The input boxes are in the
     # range of [0, width] for x and [0,height] for y
     boxes = clip_boxes_to_image(boxes, height, width)
+    # boxes = torch.cat([torch.zeros(boxes.shape[0],1), boxes], dim=1)
+
 
     # Resize short side to crop_size. Non-local and STRG uses 256.
-    # clip, boxes = short_side_scale_with_boxes(
-    #     clip,
-    #     size=crop_size,
-    #     boxes=boxes,
-    # )
+    clip, boxes = short_side_scale_with_boxes(
+        clip,
+        size=crop_size,
+        boxes=boxes,
+    )
 
     # Normalize images by mean and std.
     clip = normalize(
@@ -186,7 +189,7 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
         boxes, clip.shape[2],  clip.shape[3]
     )
 
-
+    # Incase of slowfast, generate both pathways
     if slow_fast_alpha is not None:
         fast_pathway = clip
         # Perform temporal sampling from the fast pathway.
@@ -201,7 +204,6 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
     
 
     # boxes = torch.cat([torch.zeros(boxes.shape[0],1), boxes], dim=1)
-    # clip = clip.unsqueeze(0)
 
 
     # Update sample_dict with transformed data
