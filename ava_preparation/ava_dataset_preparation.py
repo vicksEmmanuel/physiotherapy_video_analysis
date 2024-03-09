@@ -11,6 +11,7 @@ import numpy as np
 from torch.utils.data import DataLoader,random_split
 from data_preparation.config import CFG
 from data_preparation.util import ava_inference_transform2, ava_inference_transform, single_transformer, get_new_transformer
+import os
 
 
 def show_image(frame, boxes):
@@ -50,15 +51,19 @@ def prepare_ava_dataset(phase='train', config=CFG):
 
 
     prepared_frame_list = f"ava_preparation/frame_lists/{phase}.csv"
-    with open(prepared_frame_list, 'w') as prepared_frame_list_file:
-        prepared_frame_list_file.write(f"original_vido_id video_id frame_id path labels\n")
 
-        for i in range(0, len(json_array)):
-            print(json_array[i])
-            video_id = json_array[i]['original_vido_id']
-            for file in allFiles:
-                if video_id in file:
-                    prepared_frame_list_file.write(f"{video_id} {video_id} {json_array[i]['frame_id']} ava/frames/{json_array[i]['path']}" + " \"\" \n")
+    if not os.path.exists(prepared_frame_list):
+        with open(prepared_frame_list, 'w') as prepared_frame_list_file:
+            prepared_frame_list_file.write(f"original_vido_id video_id frame_id path labels\n")
+
+            for i in range(0, len(json_array)):
+                print(json_array[i])
+                video_id = json_array[i]['original_vido_id']
+                for file in allFiles:
+                    if video_id in file:
+                        prepared_frame_list_file.write(f"{video_id} {video_id} {json_array[i]['frame_id']} ava/frames/{json_array[i]['path']}" + " \"\" \n")
+
+
 
     frames_label_file_path = f"ava/annotations/ava_{phase}_v2.2.csv"
 
