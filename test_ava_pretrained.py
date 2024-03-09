@@ -152,11 +152,19 @@ for start_sec in range(0, total_duration):
     print(f"Predicted boxes for second {start_sec} - {end_sec}: {predicted_boxes.numpy()}")
 
     inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
+
+    print(f"Inputs shape: {inputs.shape}")
+    print(f"Bounding boxes shape: {inp_boxes.shape}")
+
     inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0],1), inp_boxes], dim=1)
+    inputs = inputs.unsqueeze(0)
+
+    print(f"Inputs shape: {inputs.shape}")
+    print(f"Bounding boxes shape: {inp_boxes.shape}")
 
     # Generate actions predictions for the bounding boxes in the clip.
     # The model here takes in the pre-processed video clip and the detected bounding boxes.
-    preds = model(inputs.unsqueeze(0).to(device), inp_boxes.to(device))
+    preds = model(inputs.to(device), inp_boxes.to(device))
 
     # print(f"Predictions for second {start_sec} - {end_sec}: {preds}")
 
