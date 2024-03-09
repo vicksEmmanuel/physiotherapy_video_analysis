@@ -7,7 +7,7 @@ opencv-python
 mediapipe
 matplotlib
 albumentations
-git+https://github.com/vicksEmmanuel/pytorch_video.git
+pytorchvideo
 pytorch-lightning
 pytorch_lightning
 requests
