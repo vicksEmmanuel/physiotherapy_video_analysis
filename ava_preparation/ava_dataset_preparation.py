@@ -121,6 +121,7 @@ def prepare_ava_dataset(phase='train', config=CFG):
         dataset, 
         batch_size=config.batch_size,
         num_workers=config.num_workers,
+        collate_fn=lambda x: x 
     )
 
     # Shows a picture of the first video in the dataset
