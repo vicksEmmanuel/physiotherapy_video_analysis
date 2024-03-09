@@ -1,5 +1,5 @@
 from pytorchvideo.models.resnet import create_resnet_with_roi_head
-from torch import nn
+import torch.nn as nn
 from pytorch_lightning import LightningModule
 import torch
 from torch.nn import functional as F
@@ -20,6 +20,10 @@ class SlowFastAva(LightningModule):
         self.model = create_resnet_with_roi_head(
             model_num_class=self.num_classes,
             dropout_rate=self.drop_prob,
+            input_channel=3, # RGB input from Kinetics
+            model_depth=50, # For the tutorial let's just use a 50 layer network
+            norm=nn.BatchNorm3d,
+            activation=nn.ReLU,
         )
 
     def forward(self, x, bboxes):
@@ -40,7 +44,7 @@ class SlowFastAva(LightningModule):
     def training_step(self, batch, batch_idx):
         print(f"Batch: {batch_idx}, {batch['video'].shape}, {batch['boxes'].shape}, {batch['labels']}")
 
-        outputs = self(batch["video"], batch["boxes"])
+        outputs = self(batch["video"].uns, batch["boxes"])
         loss = F.cross_entropy(outputs, batch["labels"])
         # acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
         acc = accuracy(output, y,task="multiclass",num_classes=self.num_classes)
