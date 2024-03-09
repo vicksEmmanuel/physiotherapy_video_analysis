@@ -152,9 +152,6 @@ def ava_inference_transform(
         )
         clip = [slow_pathway, fast_pathway]
 
-    
-    
-
     return clip, torch.from_numpy(boxes), ori_boxes
 
 def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
@@ -210,6 +207,10 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
         boxes, clip.shape[2],  clip.shape[3]
     )
 
+    num_boxes = boxes.shape[0]
+    dummy_labels = np.zeros((num_boxes, 1))
+    boxes_with_labels = np.hstack((boxes, dummy_labels))
+
     # Incase of slowfast, generate both pathways
     if slow_fast_alpha is not None:
         fast_pathway = clip
@@ -229,12 +230,11 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
 
     # Update sample_dict with transformed data
     transformed_sample_dict = sample_dict.copy()
-    transformed_sample_dict["video"] = clip
-
+    transformed_sample_dict["video"] = clip.unsqueeze(0)
 
     if len(boxes) > 0:
-        transformed_sample_dict["boxes"] = torch.from_numpy(boxes).float()
-    transformed_sample_dict["ori_boxes"] = ori_boxes
+        transformed_sample_dict["boxes"] = torch.from_numpy(boxes_with_labels).float()
+    transformed_sample_dict["ori_boxes"] = torch.from_numpy(boxes).float()
 
     return transformed_sample_dict
 
