@@ -48,7 +48,7 @@ class SlowFastAva(LightningModule):
         labels = selected_batch["labels"]
         labels = torch.tensor(labels, dtype=torch.long)
 
-       one_hot_labels = torch.zeros((len(labels), self.num_classes))
+        one_hot_labels = torch.zeros((len(labels), self.num_classes))
         for i, label_list in enumerate(labels):
             for label in label_list:
                 one_hot_labels[i, label - 1] = 1
