@@ -232,11 +232,6 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
     transformed_sample_dict = sample_dict.copy()
     transformed_sample_dict["video"] = clip.unsqueeze(0)
 
-    # label = torch.tensor(sample_dict["labels"])
-    # new_label = torch.nn.functional.one_hot(label, 81)
-    # transformed_sample_dict["labels"] = new_label
-    
-
     if len(boxes) > 0:
         transformed_sample_dict["boxes"] = torch.from_numpy(boxes_with_labels).float()
     transformed_sample_dict["ori_boxes"] = torch.from_numpy(boxes).float()

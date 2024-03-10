@@ -1,3 +1,4 @@
+from pytorchvideo.models.hub import slow_r50_detection 
 from pytorchvideo.models.resnet import create_resnet_with_roi_head
 from torch import nn
 from pytorch_lightning import LightningModule
@@ -47,10 +48,11 @@ class SlowFastAva(LightningModule):
         self.load()
 
     def load(self):
-        self.model = create_resnet_with_roi_head(
-            model_num_class=self.num_classes,
-            dropout_rate=self.drop_prob,
-        )
+        self.model = slow_r50_detection(True)
+        final_layer = self.model.blocks[-1]
+        num_features = final_layer.proj.in_features
+        print(num_features)
+        final_layer.proj = nn.Linear(num_features, self.num_classes)
 
     def forward(self, x, bboxes):
         return self.model(x, bboxes)
