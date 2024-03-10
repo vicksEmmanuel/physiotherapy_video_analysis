@@ -56,8 +56,13 @@ class SlowFastAva(LightningModule):
         print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels}")
 
         outputs = self.model(video, boxes)
+
+        print("Done 1")
         loss = F.cross_entropy(outputs, labels)
+        print("Done 2")
+
         acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
+        print("Done 3")
         metrics = {"train_acc": acc, "train_loss": loss}
         
         self.log_dict(metrics, on_step=False, on_epoch=True)
