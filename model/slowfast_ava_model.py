@@ -36,6 +36,24 @@ from pytorchvideo.models.resnet import create_resnet_with_roi_head
 #         return self.base_model(x, bboxes)
 
 
+class CustomSlowR50Detection(nn.Module):
+    def __init__(self, pretrained=True, num_classes=80):
+        super().__init__()
+        self.base_model = slow_r50_detection(pretrained)  # Load the pretrained model
+        # Adjust the detection head's in_features and out_features if necessary
+        detection_head = self.base_model.detection_head
+        num_features = detection_head.proj.in_features
+        detection_head.proj = nn.Linear(num_features, num_classes)
+
+        # Define a pooling layer to reduce the temporal dimension
+        self.temporal_pool = nn.AdaptiveAvgPool3d((1, None, None))
+
+    def forward(self, x, bboxes):
+        x = self.temporal_pool(x)  # Apply temporal pooling
+        x = torch.flatten(x, 2)  # Flatten the temporal dimension
+        return self.base_model(x, bboxes)
+
+
 class SlowFastAva(LightningModule):
     def __init__(self, drop_prob=0.5, num_frames=16, num_classes=5):
         super().__init__()
@@ -48,12 +66,7 @@ class SlowFastAva(LightningModule):
         self.load()
 
     def load(self):
-        self.model = slow_r50_detection(True)  # Load the model
-        detection_head = self.model.detection_head  # Access the detection head directly, no need to go through 'blocks'
-        num_features = detection_head.proj.in_features  # Get the number of input features to the 'proj' layer
-        print(num_features)
-        # Replace the 'proj' layer with a new one, adjusting the number of output features to 'self.num_classes'
-        detection_head.proj = nn.Linear(num_features, self.num_classes)
+        self.model = CustomSlowR50Detection(pretrained=True, num_classes=self.num_classes)
 
     def forward(self, x, bboxes):
         return self.model(x, bboxes)
