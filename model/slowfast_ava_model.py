@@ -76,8 +76,11 @@ class SlowFastAva(LightningModule):
         for batch_item in batch:
             videos = batch_item['video']
             bboxes = batch_item['boxes']
-            # labels = self._prepare_labels(batch_item['labels'])  # Assuming you have a method to prepare labels correctly
+
             labels = batch_item['labels']
+            labels = torch.tensor(labels, dtype=torch.long)
+            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
+            labels = new_label
 
             outputs = self(videos, bboxes)
             loss = F.cross_entropy(outputs, labels)
@@ -102,8 +105,11 @@ class SlowFastAva(LightningModule):
         for batch_item in batch:
             videos = batch_item['video']
             bboxes = batch_item['boxes']
-            # labels = self._prepare_labels(batch_item['labels'])  # Assuming you have a method to prepare labels correctly
+
             labels = batch_item['labels']
+            labels = torch.tensor(labels, dtype=torch.long)
+            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
+            labels = new_label
 
             outputs = self(videos, bboxes)
             loss = F.cross_entropy(outputs, labels)
@@ -126,8 +132,11 @@ class SlowFastAva(LightningModule):
         for batch_item in batch:
             videos = batch_item['video']
             bboxes = batch_item['boxes']
-            # labels = self._prepare_labels(batch_item['labels'])  # Assuming you have a method to prepare labels correctly
+            
             labels = batch_item['labels']
+            labels = torch.tensor(labels, dtype=torch.long)
+            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
+            labels = new_label
 
             outputs = self(videos, bboxes)
             loss = F.cross_entropy(outputs, labels)
