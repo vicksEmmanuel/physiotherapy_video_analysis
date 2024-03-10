@@ -20,8 +20,7 @@ class SlowFastAva(LightningModule):
         self.load()
 
     def load(self):
-        self.model = slow_r50_detection(
-            pretrained=False,
+        self.model = create_slowfast_with_roi_head(
             model_num_class=self.num_classes,
         )
 
@@ -54,7 +53,7 @@ class SlowFastAva(LightningModule):
 
         labels = one_hot_labels
 
-        print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels}")
+        print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels.shape}")
 
         outputs = self.model(video, boxes)
         loss = F.cross_entropy(outputs, labels)
