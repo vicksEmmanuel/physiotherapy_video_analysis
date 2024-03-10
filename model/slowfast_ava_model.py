@@ -39,8 +39,7 @@ from pytorchvideo.models.resnet import create_resnet_with_roi_head
 class CustomSlowR50Detection(nn.Module):
     def __init__(self, pretrained=True, num_classes=80):
         super().__init__()
-        self.base_model = slow_r50_detection(pretrained)  # Load the pretrained model
-        # Adjust the detection head's in_features and out_features if necessary
+        self.base_model = slow_r50_detection(pretrained)
         detection_head = self.base_model.detection_head
         num_features = detection_head.proj.in_features
         detection_head.proj = nn.Linear(num_features, num_classes)
@@ -50,7 +49,7 @@ class CustomSlowR50Detection(nn.Module):
 
     def forward(self, x, bboxes):
         x = self.temporal_pool(x)  # Apply temporal pooling
-        x = torch.flatten(x, 2)  # Flatten the temporal dimension
+        # x = torch.flatten(x, 2)  # Flatten the temporal dimension
         return self.base_model(x, bboxes)
 
 
@@ -97,7 +96,7 @@ class SlowFastAva(LightningModule):
             labels = torch.tensor(labels, dtype=torch.long)
             new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
             labels = new_label
-            
+
             print(f"Videos shape: {videos.shape}")
             outputs = self(videos, bboxes)
 
