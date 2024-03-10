@@ -19,11 +19,6 @@ class SlowFastAva(LightningModule):
     def load(self):
         self.model = create_resnet_with_roi_head(
             model_num_class=self.num_classes,
-            dropout_rate=self.drop_prob,
-            input_channel=3, # RGB input from Kinetics
-            model_depth=50,
-            norm=nn.BatchNorm3d,
-            activation=nn.ReLU,
         )
 
     def forward(self, x, bboxes):
