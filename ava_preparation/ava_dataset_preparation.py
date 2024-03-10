@@ -55,19 +55,9 @@ def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
 
 
 def draw_image(sample_1):
+    print(f"Video: {video.shape} Boxes: {boxes.shape}")
+
     frame = sample_1['video'].squeeze(0)[0] # Access the first video in the batch
-
-    label = torch.tensor(sample_1["labels"])
-    print(f"Labels:  {label}")
-
-    labels = label
-    one_hot_labels = torch.zeros((len(labels), 80))
-    for i, label_list in enumerate(labels):
-        for label in label_list:
-            one_hot_labels[i, label - 1] = 1
-
-
-    print(f"Labels: {one_hot_labels} label shape {one_hot_labels.shape}")
 
     # frame = frame[:,inp_imgs.shape[1]//2,:,:]
     # frame = frame.permute(1,2,0)
