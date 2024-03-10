@@ -82,7 +82,7 @@ class SlowFastAva(LightningModule):
             new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
             labels = new_label
 
-            print(f"videos: {videos.shape} bboxes: {bboxes.shape} labels: {labels}")
+            print(f"videos: {videos.shape} bboxes: {bboxes.shape} labels: {labels.shape}")
             outputs = self.model(videos, bboxes)
             print("modelling done")
             loss = F.cross_entropy(outputs, labels)
@@ -113,7 +113,8 @@ class SlowFastAva(LightningModule):
             new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
             labels = new_label
 
-            print(f"videos: {videos.shape} bboxes: {bboxes.shape} labels: {labels}")
+            print(f"videos: {videos.shape} bboxes: {bboxes.shape} labels: {labels.shape}")
+
             outputs = self.model(videos, bboxes)
             print("modelling done")
             loss = F.cross_entropy(outputs, labels)
@@ -142,7 +143,7 @@ class SlowFastAva(LightningModule):
             new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
             labels = new_label
 
-            print(f"videos: {videos.shape} bboxes: {bboxes.shape} labels: {labels}")
+            print(f"videos: {videos.shape} bboxes: {bboxes.shape} labels: {labels.shape}")
             outputs = self.model(videos, bboxes)
             print("modelling done")
             loss = F.cross_entropy(outputs, labels)
