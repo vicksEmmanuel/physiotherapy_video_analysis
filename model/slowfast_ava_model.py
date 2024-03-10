@@ -1,6 +1,8 @@
 from pytorchvideo.models.resnet import create_resnet_with_roi_head
 import torch.nn as nn
 from pytorch_lightning import LightningModule
+from pytorchvideo.models.slowfast import create_slowfast, create_slowfast_with_roi_head
+
 import torch
 from torch.nn import functional as F
 from torchmetrics.functional import accuracy
@@ -17,13 +19,8 @@ class SlowFastAva(LightningModule):
         self.load()
 
     def load(self):
-        self.model = create_resnet_with_roi_head(
+        self.model = create_slowfast_with_roi_head(
             model_num_class=self.num_classes,
-            dropout_rate=self.drop_prob,
-            input_channel=3, # RGB input from Kinetics
-            model_depth=50,
-            norm=nn.BatchNorm3d,
-            activation=nn.ReLU,
         )
 
     def forward(self, x, bboxes):
