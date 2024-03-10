@@ -53,7 +53,7 @@ class SlowFastAva(LightningModule):
 
         labels = one_hot_labels
 
-        print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels}")
+        print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels.shape}")
 
         outputs = self.model(video, boxes)
 
