@@ -69,6 +69,7 @@ class SlowFastAva(LightningModule):
         self.model = CustomSlowR50Detection(pretrained=True, num_classes=self.num_classes)
 
     def forward(self, x, bboxes):
+        print(f"Input shape before model: {x.shape}")  # Debug print
         return self.model(x, bboxes)
 
     def configure_optimizers(self):
