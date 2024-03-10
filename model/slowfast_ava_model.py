@@ -69,9 +69,14 @@ class SlowFastAva(LightningModule):
 
     def training_step(self, batch, batch_idx):
         print("Training step")
-        print(batch)
-        videos, bboxes, labels = batch
-        outputs = self(videos, bboxes)
+        videos = torch.stack([x['video'] for x in batch])
+        bboxes = torch.stack([x['boxes'] for x in batch])
+        # Assuming labels are stored as a list of lists (each inner list could potentially have different lengths)
+        labels = [x['labels'] for x in batch] 
+        labels = [label for sublist in labels for label in sublist]  # Flatten the list
+        labels = torch.tensor(labels, device=self.device)
+        
+        outputs = self.model(videos, bboxes)
         loss = F.cross_entropy(outputs, labels)
         acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
@@ -80,8 +85,13 @@ class SlowFastAva(LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        videos, bboxes, labels = batch
-        outputs = self(videos, bboxes)
+        videos = torch.stack([x['video'] for x in batch])
+        bboxes = torch.stack([x['boxes'] for x in batch])
+        labels = [x['labels'] for x in batch]
+        labels = [label for sublist in labels for label in sublist]  # Flatten the list
+        labels = torch.tensor(labels, device=self.device)
+        
+        outputs = self.model(videos, bboxes)
         loss = F.cross_entropy(outputs, labels)
         acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
@@ -90,11 +100,17 @@ class SlowFastAva(LightningModule):
         return metrics
 
     def test_step(self, batch, batch_idx):
-        videos, bboxes, labels = batch
-        outputs = self(videos, bboxes)
+        videos = torch.stack([x['video'] for x in batch])
+        bboxes = torch.stack([x['boxes'] for x in batch])
+        labels = [x['labels'] for x in batch]
+        labels = [label for sublist in labels for label in sublist]  # Flatten the list
+        labels = torch.tensor(labels, device=self.device)
+        
+        outputs = self.model(videos, bboxes)
         loss = F.cross_entropy(outputs, labels)
         acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
         metrics = {"test_acc": acc, "test_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return metrics
+
