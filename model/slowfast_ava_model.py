@@ -1,8 +1,6 @@
 from pytorchvideo.models.resnet import create_resnet_with_roi_head
-import torch.nn as nn
+from torch import nn
 from pytorch_lightning import LightningModule
-from pytorchvideo.models.slowfast import create_slowfast, create_slowfast_with_roi_head
-
 import torch
 from torch.nn import functional as F
 from torchmetrics.functional import accuracy
@@ -12,7 +10,7 @@ class SlowFastAva(LightningModule):
         super().__init__()
 
         self.drop_prob = drop_prob
-        self.num_classes = 80 # num_classes
+        self.num_classes = num_classes
         self.num_frames = num_frames
         self.save_hyperparameters()
 
@@ -21,7 +19,7 @@ class SlowFastAva(LightningModule):
     def load(self):
         self.model = create_resnet_with_roi_head(
             model_num_class=self.num_classes,
-            head_pool = None,
+            dropout_rate=self.drop_prob,
         )
 
     def forward(self, x, bboxes):
@@ -40,73 +38,30 @@ class SlowFastAva(LightningModule):
             sch.step(self.trainer.callback_metrics["valid_loss"])
 
     def training_step(self, batch, batch_idx):
-        selected_batch = batch[batch_idx]
-        video = selected_batch["video"]
-        boxes = selected_batch["boxes"]
-        labels = selected_batch["labels"]
-        labels = torch.tensor(labels, dtype=torch.long)
-
-        one_hot_labels = torch.zeros((len(labels), self.num_classes))
-        for i, label_list in enumerate(labels):
-            for label in label_list:
-                one_hot_labels[i, label - 1] = 1
-
-        labels = one_hot_labels
-
-        print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels.shape}")
-
-        outputs = self.model(video, boxes)
-
-        print("Done 1")
+        videos, bboxes, labels = batch
+        outputs = self(videos, bboxes)
         loss = F.cross_entropy(outputs, labels)
-        print("Done 2")
+        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
-        acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
-        print("Done 3")
         metrics = {"train_acc": acc, "train_loss": loss}
-        
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        selected_batch = batch[batch_idx]
-        video = selected_batch["video"]
-        boxes = selected_batch["boxes"]
-        labels = selected_batch["labels"]
-        labels = torch.tensor(labels, dtype=torch.long)
-
-        one_hot_labels = torch.zeros((len(labels), self.num_classes))
-        for i, label_list in enumerate(labels):
-            for label in label_list:
-                one_hot_labels[i, label - 1] = 1
-
-        labels = one_hot_labels
-
-        outputs = self.model(video, boxes)
+        videos, bboxes, labels = batch
+        outputs = self(videos, bboxes)
         loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
+        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
         metrics = {"valid_acc": acc, "valid_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return metrics
 
     def test_step(self, batch, batch_idx):
-        selected_batch = batch[batch_idx]
-        video = selected_batch["video"]
-        boxes = selected_batch["boxes"]
-        labels = selected_batch["labels"]
-        labels = torch.tensor(labels, dtype=torch.long)
-
-        one_hot_labels = torch.zeros((len(labels), self.num_classes))
-        for i, label_list in enumerate(labels):
-            for label in label_list:
-                one_hot_labels[i, label - 1] = 1
-
-        labels = one_hot_labels
-
-
+        videos, bboxes, labels = batch
+        outputs = self(videos, bboxes)
         loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
+        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
         metrics = {"test_acc": acc, "test_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
