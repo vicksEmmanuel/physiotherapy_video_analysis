@@ -48,12 +48,12 @@ class SlowFastAva(LightningModule):
         self.load()
 
     def load(self):
-        self.model = slow_r50_detection(True)
-        print(self.model)
-        final_layer = self.model.blocks[-1]
-        num_features = final_layer.proj.in_features
+        self.model = slow_r50_detection(True)  # Load the model
+        detection_head = self.model.detection_head  # Access the detection head directly, no need to go through 'blocks'
+        num_features = detection_head.proj.in_features  # Get the number of input features to the 'proj' layer
         print(num_features)
-        final_layer.proj = nn.Linear(num_features, self.num_classes)
+        # Replace the 'proj' layer with a new one, adjusting the number of output features to 'self.num_classes'
+        detection_head.proj = nn.Linear(num_features, self.num_classes)
 
     def forward(self, x, bboxes):
         return self.model(x, bboxes)
