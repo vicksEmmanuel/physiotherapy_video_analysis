@@ -47,7 +47,7 @@ class SlowFastAva(LightningModule):
         self.load()
 
     def load(self):
-        self.model = CustomSlowFastAva(
+        self.model = create_resnet_with_roi_head(
             num_classes=self.num_classes,
             drop_prob=self.drop_prob,
         )
