@@ -26,7 +26,7 @@ from torchvision.transforms import functional as F
 from detectron2.utils.video_visualizer import VideoVisualizer
 import pytorchvideo.models.slowfast as SlowFastModel
 import cv2
-from model.slowfast_model import SlowFastAva  # Ensure this import matches your project structure
+from model.slowfast_ava_model import SlowFastAva  # Ensure this import matches your project structure
 from data_preparation.util import single_transformer
 from pytorchvideo.models.resnet import create_resnet, create_resnet_with_roi_head
 
