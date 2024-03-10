@@ -2,7 +2,6 @@ from pytorchvideo.models.resnet import create_resnet_with_roi_head
 import torch.nn as nn
 from pytorch_lightning import LightningModule
 from pytorchvideo.models.slowfast import create_slowfast, create_slowfast_with_roi_head
-from pytorchvideo.models.hub import slow_r50_detection 
 
 import torch
 from torch.nn import functional as F
@@ -20,7 +19,7 @@ class SlowFastAva(LightningModule):
         self.load()
 
     def load(self):
-        self.model = create_slowfast_with_roi_head(
+        self.model = create_resnet_with_roi_head(
             model_num_class=self.num_classes,
         )
 
@@ -53,7 +52,7 @@ class SlowFastAva(LightningModule):
 
         labels = one_hot_labels
 
-        print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels.shape}")
+        print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels}")
 
         outputs = self.model(video, boxes)
         loss = F.cross_entropy(outputs, labels)
