@@ -21,6 +21,7 @@ class SlowFastAva(LightningModule):
     def load(self):
         self.model = create_resnet_with_roi_head(
             model_num_class=self.num_classes,
+            head_pool = None,
         )
 
     def forward(self, x, bboxes):
