@@ -50,7 +50,7 @@ print("Model loaded.")
 
 actions = Action().action
 label_map = {i: actions[i] for i in range(0, len(actions))}
-video_visualizer = VideoVisualizer(len(Action().action), label_map, top_k=3, mode="thres",thres=0.5)
+# video_visualizer = VideoVisualizer(len(Action().action), label_map, top_k=3, mode="thres",thres=0.5)
 
 print(f"Video action loaded. {actions}")
 
