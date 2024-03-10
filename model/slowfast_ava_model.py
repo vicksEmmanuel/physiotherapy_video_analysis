@@ -79,7 +79,9 @@ class SlowFastAva(LightningModule):
             # labels = self._prepare_labels(batch_item['labels'])  # Assuming you have a method to prepare labels correctly
             labels = batch_item['labels']
 
-            outputs = self(videos, bboxes)
+            print(f"videos: {videos.shape} bboxes: {bboxes.shape} labels: {labels}")
+            outputs = self.model(videos, bboxes)
+            print("modelling done")
             loss = F.cross_entropy(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
@@ -105,7 +107,9 @@ class SlowFastAva(LightningModule):
             # labels = self._prepare_labels(batch_item['labels'])  # Assuming you have a method to prepare labels correctly
             labels = batch_item['labels']
 
-            outputs = self(videos, bboxes)
+            print(f"videos: {videos.shape} bboxes: {bboxes.shape} labels: {labels}")
+            outputs = self.model(videos, bboxes)
+            print("modelling done")
             loss = F.cross_entropy(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
@@ -129,7 +133,9 @@ class SlowFastAva(LightningModule):
             # labels = self._prepare_labels(batch_item['labels'])  # Assuming you have a method to prepare labels correctly
             labels = batch_item['labels']
 
-            outputs = self(videos, bboxes)
+            print(f"videos: {videos.shape} bboxes: {bboxes.shape} labels: {labels}")
+            outputs = self.model(videos, bboxes)
+            print("modelling done")
             loss = F.cross_entropy(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
