@@ -49,6 +49,7 @@ class SlowFastAva(LightningModule):
 
     def load(self):
         self.model = slow_r50_detection(True)
+        print(self.model)
         final_layer = self.model.blocks[-1]
         num_features = final_layer.proj.in_features
         print(num_features)
