@@ -14,6 +14,10 @@ from data_preparation.config import CFG
 from data_preparation.util import ava_inference_transform2, ava_inference_transform, single_transformer, get_new_transformer
 import os
 
+from pytorchvideo.transforms.functional import (
+    convert_to_one_hot,
+)
+
 
 def show_image(frame, boxes):
     fig, ax = plt.subplots(1)
@@ -51,13 +55,25 @@ def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
 
 
 def draw_image(sample_1):
-    frame = sample_1['video'][0]  # Access the first video in the batch
+    frame = sample_1['video'].squeeze(0)[0] # Access the first video in the batch
+
+    label = torch.tensor(sample_1["labels"])
+    print(f"Labels:  {label}")
+
+    labels = label
+    one_hot_labels = torch.zeros((len(labels), 80))
+    for i, label_list in enumerate(labels):
+        for label in label_list:
+            one_hot_labels[i, label - 1] = 1
+
+
+    print(f"Labels: {one_hot_labels} label shape {one_hot_labels.shape}")
 
     # frame = frame[:,inp_imgs.shape[1]//2,:,:]
     # frame = frame.permute(1,2,0)
     frame = frame[0, :, :].detach().cpu().numpy()
     frame = (frame - frame.min()) / (frame.max() - frame.min())
-    boxes = sample_1['boxes']  # Retrieve bounding box data
+    boxes = sample_1['ori_boxes']  # Retrieve bounding box data
     show_image(frame, boxes)
 
 def visualize_ava_dataset(dataset):
@@ -125,6 +141,6 @@ def prepare_ava_dataset(phase='train', config=CFG):
     )
 
     # Shows a picture of the first video in the dataset
-    # visualize_ava_dataset(dataset)
+    visualize_ava_dataset(dataset)
 
     return loader

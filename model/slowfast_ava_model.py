@@ -46,17 +46,20 @@ class SlowFastAva(LightningModule):
         video = selected_batch["video"]
         boxes = selected_batch["boxes"]
         labels = selected_batch["labels"]
+        labels = torch.tensor(labels, dtype=torch.long)
 
-        labels_tensor = torch.zeros((len(labels), self.num_classes))
+       one_hot_labels = torch.zeros((len(labels), self.num_classes))
         for i, label_list in enumerate(labels):
             for label in label_list:
-                labels_tensor[i, label] = 1
+                one_hot_labels[i, label - 1] = 1
 
-        print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels_tensor}")
+        labels = one_hot_labels
+
+        print(f"Video shape: {video.shape} and boxes shape: {boxes.shape} and labels shape: {labels}")
 
         outputs = self(video, boxes)
-        loss = F.cross_entropy(outputs, labels_tensor)
-        acc = accuracy(outputs.softmax(dim=-1), labels_tensor,task="multiclass",num_classes=self.num_classes)
+        loss = F.cross_entropy(outputs, labels)
+        acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
         metrics = {"train_acc": acc, "train_loss": loss}
         
         self.log_dict(metrics, on_step=False, on_epoch=True)
@@ -67,15 +70,18 @@ class SlowFastAva(LightningModule):
         video = selected_batch["video"]
         boxes = selected_batch["boxes"]
         labels = selected_batch["labels"]
+        labels = torch.tensor(labels, dtype=torch.long)
 
-        labels_tensor = torch.zeros((len(labels),self.num_classes))
+        one_hot_labels = torch.zeros((len(labels), self.num_classes))
         for i, label_list in enumerate(labels):
             for label in label_list:
-                labels_tensor[i, label] = 1
+                one_hot_labels[i, label - 1] = 1
+
+        labels = one_hot_labels
 
         outputs = self(video, boxes)
-        loss = F.cross_entropy(outputs, labels_tensor)
-        acc = accuracy(outputs.softmax(dim=-1), labels_tensor,task="multiclass",num_classes=self.num_classes)
+        loss = F.cross_entropy(outputs, labels)
+        acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
 
         metrics = {"valid_acc": acc, "valid_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
@@ -86,15 +92,18 @@ class SlowFastAva(LightningModule):
         video = selected_batch["video"]
         boxes = selected_batch["boxes"]
         labels = selected_batch["labels"]
+        labels = torch.tensor(labels, dtype=torch.long)
 
-        labels_tensor = torch.zeros((len(labels), self.num_classes))
+        one_hot_labels = torch.zeros((len(labels), self.num_classes))
         for i, label_list in enumerate(labels):
             for label in label_list:
-                labels_tensor[i, label] = 1
+                one_hot_labels[i, label - 1] = 1
+
+        labels = one_hot_labels
 
 
-        loss = F.cross_entropy(outputs, labels_tensor)
-        acc = accuracy(outputs.softmax(dim=-1), labels_tensor,task="multiclass",num_classes=self.num_classes)
+        loss = F.cross_entropy(outputs, labels)
+        acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass",num_classes=self.num_classes)
 
         metrics = {"test_acc": acc, "test_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
