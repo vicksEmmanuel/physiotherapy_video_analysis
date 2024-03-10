@@ -10,7 +10,7 @@ class SlowFastAva(LightningModule):
         super().__init__()
 
         self.drop_prob = drop_prob
-        self.num_classes = num_classes
+        self.num_classes = 80 # num_classes
         self.num_frames = num_frames
         self.save_hyperparameters()
 

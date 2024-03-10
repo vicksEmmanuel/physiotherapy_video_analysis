@@ -25,15 +25,21 @@ def train(config):
 
     print("Training begins:")
 
+    label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt')
+    action_ids = list(label_map.keys())
+    print(f"Action IDs: {action_ids}")
+    length_of_actions = len(action_ids)
+    print(f"Length of actions:  {length_of_actions}")
+    action_ids, length_of_actions
+
+    print(f"Length of actions:  {length_of_actions}")
+
     loaders = {
         p: prepare_ava_dataset(p,  config=config)
             for p in [ 'train', 'val'] 
     }
 
-    label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt')
-    action_ids = list(label_map.keys())
-    length_of_actions = len(action_ids)
-    action_ids, length_of_actions
+   
 
     print("Loaders created")
     
