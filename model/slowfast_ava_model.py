@@ -70,41 +70,75 @@ class SlowFastAva(LightningModule):
     def training_step(self, batch, batch_idx):
         print("Training step")
         print(batch)
-        videos = batch['videos'] 
-        bboxes = batch['boxes'] 
-        labels = batch['labels']
-        outputs = self(videos, bboxes)
 
-        loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+        total_loss = 0
+        total_acc = 0
+        for batch_item in batch:
+            videos = batch_item['video']
+            bboxes = batch_item['boxes']
+            # labels = self._prepare_labels(batch_item['labels'])  # Assuming you have a method to prepare labels correctly
+            labels = batch_item['labels']
 
-        metrics = {"train_acc": acc, "train_loss": loss}
+            outputs = self(videos, bboxes)
+            loss = F.cross_entropy(outputs, labels)
+            acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+
+            total_loss += loss
+            total_acc += acc
+
+        avg_loss = total_loss / len(batch)
+        avg_acc = total_acc / len(batch)
+
+        metrics = {"train_acc": avg_acc, "train_loss": avg_loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
-        return loss
+        return avg_loss
 
     def validation_step(self, batch, batch_idx):
-        videos = batch['videos'] 
-        bboxes = batch['boxes'] 
-        labels = batch['labels']
-        outputs = self(videos, bboxes)
+        print("Training step")
+        print(batch)
 
-        outputs = self(videos, bboxes)
-        loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+        total_loss = 0
+        total_acc = 0
+        for batch_item in batch:
+            videos = batch_item['video']
+            bboxes = batch_item['boxes']
+            # labels = self._prepare_labels(batch_item['labels'])  # Assuming you have a method to prepare labels correctly
+            labels = batch_item['labels']
 
-        metrics = {"valid_acc": acc, "valid_loss": loss}
+            outputs = self(videos, bboxes)
+            loss = F.cross_entropy(outputs, labels)
+            acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+
+            total_loss += loss
+            total_acc += acc
+
+        avg_loss = total_loss / len(batch)
+        avg_acc = total_acc / len(batch)
+
+        metrics = {"valid_acc": avg_acc, "valid_loss": avg_loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return metrics
 
     def test_step(self, batch, batch_idx):
-        videos = batch['videos'] 
-        bboxes = batch['boxes'] 
-        labels = batch['labels']
 
-        outputs = self(videos, bboxes)
-        loss = F.cross_entropy(outputs, labels)
-        acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+        total_loss = 0
+        total_acc = 0
+        for batch_item in batch:
+            videos = batch_item['video']
+            bboxes = batch_item['boxes']
+            # labels = self._prepare_labels(batch_item['labels'])  # Assuming you have a method to prepare labels correctly
+            labels = batch_item['labels']
 
-        metrics = {"test_acc": acc, "test_loss": loss}
+            outputs = self(videos, bboxes)
+            loss = F.cross_entropy(outputs, labels)
+            acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+
+            total_loss += loss
+            total_acc += acc
+
+        avg_loss = total_loss / len(batch)
+        avg_acc = total_acc / len(batch)
+        
+        metrics = {"test_acc": avg_acc, "test_loss": avg_loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return metrics
