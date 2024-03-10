@@ -44,9 +44,7 @@ class CustomSlowR50Detection(nn.Module):
         num_features = detection_head.proj.in_features
         detection_head.proj = nn.Linear(num_features, num_classes)
 
-        # Define a pooling layer to reduce the temporal dimension
-        self.temporal_pool = nn.AdaptiveAvgPool3d((1, None, None))
-        self.problematic_pool = nn.AvgPool3d(kernel_size=(1, 1, 1), stride=(1, 1, 1)) 
+        self.temporal_pool = nn.AdaptiveAvgPool3d((None, None, None))
 
     def forward(self, x, bboxes):
         x = self.temporal_pool(x)
