@@ -9,30 +9,30 @@ import torch
 import torch.nn as nn
 from pytorchvideo.models.resnet import create_resnet_with_roi_head
 
-class CustomSlowFastAva(nn.Module):
-    def __init__(self, num_classes, drop_prob=0.5, input_channel=3, model_depth=50, norm=nn.BatchNorm3d, activation=nn.ReLU):
-        super().__init__()
-        self.base_model = create_resnet_with_roi_head(
-            model_num_class=num_classes,
-            dropout_rate=drop_prob,
-            input_channel=input_channel,
-            model_depth=model_depth,
-            norm=norm,
-            activation=activation,
-        )
+# class CustomSlowFastAva(nn.Module):
+#     def __init__(self, num_classes, drop_prob=0.5, input_channel=3, model_depth=50, norm=nn.BatchNorm3d, activation=nn.ReLU):
+#         super().__init__()
+#         self.base_model = create_resnet_with_roi_head(
+#             model_num_class=num_classes,
+#             dropout_rate=drop_prob,
+#             input_channel=input_channel,
+#             model_depth=model_depth,
+#             norm=norm,
+#             activation=activation,
+#         )
 
-        # Add a temporal pooling layer to reduce the temporal dimension to 1
-        # Assuming the temporal dimension is at index 2 (BxCxTxHxW)
-        self.temporal_pool = nn.AdaptiveAvgPool3d((1, None, None))
+#         # Add a temporal pooling layer to reduce the temporal dimension to 1
+#         # Assuming the temporal dimension is at index 2 (BxCxTxHxW)
+#         self.temporal_pool = nn.AdaptiveAvgPool3d((1, None, None))
 
-    def forward(self, x, bboxes):
-        # Apply temporal pooling
-        x = self.temporal_pool(x)
+#     def forward(self, x, bboxes):
+#         # Apply temporal pooling
+#         x = self.temporal_pool(x)
         
-        # Remove the singleton temporal dimension
-        x = x.squeeze(2)
+#         # Remove the singleton temporal dimension
+#         x = x.squeeze(2)
         
-        return self.base_model(x, bboxes)
+#         return self.base_model(x, bboxes)
 
 
 class SlowFastAva(LightningModule):
@@ -48,8 +48,8 @@ class SlowFastAva(LightningModule):
 
     def load(self):
         self.model = create_resnet_with_roi_head(
-            num_classes=self.num_classes,
-            drop_prob=self.drop_prob,
+            model_num_class=self.num_classes,
+            dropout_rate=self.drop_prob,
         )
 
     def forward(self, x, bboxes):
