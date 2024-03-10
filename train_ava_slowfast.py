@@ -23,33 +23,37 @@ from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 
 def train(config):
 
+
     print("Training begins:")
 
-    prepare_ava_dataset('train',  config=config)
+    label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt')
+    action_ids = list(label_map.keys())
+    print(f"Action IDs: {action_ids}")
+    length_of_actions = len(action_ids)
+    print(f"Length of actions:  {length_of_actions}")
+    action_ids, length_of_actions
 
-    print("Train Dataset prepared")
+    print(f"Length of actions:  {length_of_actions}")
 
-    prepare_ava_dataset('val',  config=config)
 
-    print("Val Dataset prepared")
+    model = SlowFastAva(
+        drop_prob=config.drop_prob, 
+        num_frames=config.num_frames,
+        num_classes=length_of_actions
+    )
+
+    print(f"Model: {model}")
 
     loaders = {
         p: prepare_ava_dataset(p,  config=config)
             for p in [ 'train', 'val'] 
     }
 
-    label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt')
-    action_ids = list(label_map.keys())
-    length_of_actions = len(action_ids)
-    action_ids, length_of_actions
+   
 
     print("Loaders created")
     
-    model = SlowFastAva(
-        drop_prob=config.drop_prob, 
-        num_frames=config.num_frames,
-        num_classes=length_of_actions
-    )
+    
 
 
     checkpoint_callback = ModelCheckpoint(

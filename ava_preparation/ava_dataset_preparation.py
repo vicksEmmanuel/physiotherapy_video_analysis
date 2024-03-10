@@ -14,6 +14,10 @@ from data_preparation.config import CFG
 from data_preparation.util import ava_inference_transform2, ava_inference_transform, single_transformer, get_new_transformer
 import os
 
+from pytorchvideo.transforms.functional import (
+    convert_to_one_hot,
+)
+
 
 def show_image(frame, boxes):
     fig, ax = plt.subplots(1)
@@ -51,13 +55,15 @@ def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
 
 
 def draw_image(sample_1):
-    frame = sample_1['video'][0]  # Access the first video in the batch
+    print(f"Video: {video.shape} Boxes: {boxes.shape}")
+
+    frame = sample_1['video'].squeeze(0)[0] # Access the first video in the batch
 
     # frame = frame[:,inp_imgs.shape[1]//2,:,:]
     # frame = frame.permute(1,2,0)
     frame = frame[0, :, :].detach().cpu().numpy()
     frame = (frame - frame.min()) / (frame.max() - frame.min())
-    boxes = sample_1['boxes']  # Retrieve bounding box data
+    boxes = sample_1['ori_boxes']  # Retrieve bounding box data
     show_image(frame, boxes)
 
 def visualize_ava_dataset(dataset):
@@ -117,13 +123,14 @@ def prepare_ava_dataset(phase='train', config=CFG):
         transform=transform
     )
 
-    # Shows a picture of the first video in the dataset
-    visualize_ava_dataset(dataset)
-
     loader = DataLoader(
         dataset, 
         batch_size=config.batch_size,
         num_workers=config.num_workers,
+        collate_fn=lambda x: x 
     )
+
+    # Shows a picture of the first video in the dataset
+    # visualize_ava_dataset(dataset)
 
     return loader

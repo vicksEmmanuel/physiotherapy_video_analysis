@@ -26,7 +26,7 @@ from torchvision.transforms import functional as F
 from detectron2.utils.video_visualizer import VideoVisualizer
 import pytorchvideo.models.slowfast as SlowFastModel
 import cv2
-
+from model.slowfast_ava_model import SlowFastAva  # Ensure this import matches your project structure
 from data_preparation.util import single_transformer
 from pytorchvideo.models.resnet import create_resnet, create_resnet_with_roi_head
 
@@ -37,9 +37,9 @@ new_path = get_video_clip_and_resize(video_path)
 encoded_vid = EncodedVideo.from_path(new_path)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = slow_r50_detection(True)
+# model = slow_r50_detection(True)
 # print(model)
-# model = create_resnet_with_roi_head(model_num_class=len(Action().action))
+model = SlowFastAva()
 
 print(model)
 
@@ -152,11 +152,19 @@ for start_sec in range(0, total_duration):
     print(f"Predicted boxes for second {start_sec} - {end_sec}: {predicted_boxes.numpy()}")
 
     inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
+
+    print(f"Inputs shape: {inputs.shape}")
+    print(f"Bounding boxes shape: {inp_boxes.shape}")
+
     inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0],1), inp_boxes], dim=1)
+    inputs = inputs.unsqueeze(0)
+
+    print(f"Inputs shape: {inputs.shape}")
+    print(f"Bounding boxes shape: {inp_boxes.shape}")
 
     # Generate actions predictions for the bounding boxes in the clip.
     # The model here takes in the pre-processed video clip and the detected bounding boxes.
-    preds = model(inputs.unsqueeze(0).to(device), inp_boxes.to(device))
+    preds = model(inputs.to(device), inp_boxes.to(device))
 
     # print(f"Predictions for second {start_sec} - {end_sec}: {preds}")
 
