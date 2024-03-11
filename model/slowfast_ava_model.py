@@ -87,6 +87,7 @@ class SlowFastAva(LightningModule):
         total_loss = 0
         total_acc = 0
         for batch_item in batch:
+            print(f"Video Name: {batch_item['video_label']}")
             videos = batch_item['video']
             bboxes = batch_item['boxes']
 
