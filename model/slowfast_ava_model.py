@@ -39,15 +39,15 @@ from pytorchvideo.models.resnet import create_resnet_with_roi_head
 class CustomSlowR50Detection(nn.Module):
     def __init__(self, pretrained=True, num_classes=80):
         super().__init__()
-        self.base_model = slow_r50_detection(pretrained)
-        detection_head = self.base_model.detection_head
-        num_features = detection_head.proj.in_features
-        detection_head.proj = nn.Linear(num_features, num_classes)
+        self.base_model = create_resnet_with_roi_head(
+            model_num_class=num_classes
+        )
+        # detection_head = self.base_model.detection_head
+        # num_features = detection_head.proj.in_features
+        # detection_head.proj = nn.Linear(num_features, num_classes)
 
-        self.temporal_pool = nn.AdaptiveAvgPool3d((None, None, None))
 
     def forward(self, x, bboxes):
-        x = self.temporal_pool(x)
         return self.base_model(x, bboxes)
 
 
