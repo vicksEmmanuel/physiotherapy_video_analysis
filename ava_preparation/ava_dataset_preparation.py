@@ -56,10 +56,8 @@ def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
 
 def draw_image(sample_1):
     print(sample_1)
-    frame = sample_1['video'].squeeze(0)[0] # Access the first video in the batch
+    frame = sample_1['video'][0] # Access the first video in the batch
 
-    # frame = frame[:,inp_imgs.shape[1]//2,:,:]
-    # frame = frame.permute(1,2,0)
     frame = frame[0, :, :].detach().cpu().numpy()
     frame = (frame - frame.min()) / (frame.max() - frame.min())
     boxes = sample_1['ori_boxes']  # Retrieve bounding box data
@@ -112,7 +110,14 @@ def prepare_ava_dataset(phase='train', config=CFG):
     frames_label_file_path = f"ava/annotations/ava_{phase}_v2.2.csv"
 
     def transform(sample_dict):
-        return ava_inference_transform2(sample_dict, num_frames = config.num_frames, slow_fast_alpha = 4.0)
+        return ava_inference_transform2(
+            sample_dict, 
+            num_frames = config.num_frames, 
+            slow_fast_alpha = 4.0, 
+            crop_size=256, 
+            data_mean=[0.45, 0.45, 0.45], 
+            data_std=[0.225, 0.225, 0.225]
+        )
 
     dataset = Ava(
         frame_paths_file=prepared_frame_list,

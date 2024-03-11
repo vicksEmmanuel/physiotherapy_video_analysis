@@ -168,7 +168,7 @@ def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
 
     return adjusted_boxes
 
-def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean=[0.45, 0.45, 0.45], data_std=[0.225, 0.225, 0.225], slow_fast_alpha=None):
+def ava_inference_transform2(sample_dict, num_frames=4, slow_fast_alpha=None, crop_size=256, data_mean=[0.45, 0.45, 0.45], data_std=[0.225, 0.225, 0.225]):
     clip = sample_dict["video"]
     boxes = np.array(sample_dict.get("boxes", []))
     ori_boxes = boxes.copy()
@@ -219,7 +219,7 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
             clip,
             1,
             torch.linspace(
-                0, clip.shape[1] - 1, clip.shape[1] // slow_fast_alpha
+                0, clip.shape[1] - 1, int(clip.shape[1] // slow_fast_alpha)
             ).long(),
         )
         clip = [slow_pathway, fast_pathway]
@@ -227,10 +227,11 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
 
     # boxes = torch.cat([torch.zeros(boxes.shape[0],1), boxes], dim=1)
 
+    print(f"clip {clip}")
 
     # Update sample_dict with transformed data
     transformed_sample_dict = sample_dict.copy()
-    transformed_sample_dict["video"] = clip.unsqueeze(0)
+    transformed_sample_dict["video"] = clip
 
     if len(boxes) > 0:
         transformed_sample_dict["boxes"] = torch.from_numpy(boxes_with_labels).float()
