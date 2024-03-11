@@ -1,8 +1,8 @@
 class CFG:
     seed = 42
-    num_frames = 32
+    num_frames = 4
     num_classes = 2
-    batch_size = 4
+    batch_size = 32
     num_workers = 0 # 32
     learning_rate = 1e-4
     num_epochs = 100

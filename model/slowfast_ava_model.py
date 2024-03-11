@@ -87,6 +87,7 @@ class SlowFastAva(LightningModule):
         for batch_item in batch:
             print(f"Video Name: {batch_item['video_name']}")
             videos = batch_item['video']
+            videos = videos.unsqueeze(0)
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
@@ -116,6 +117,7 @@ class SlowFastAva(LightningModule):
         for batch_item in batch:
             print(f"Video Name: {batch_item['video_name']}")
             videos = batch_item['video']
+            videos = videos.unsqueeze(0)
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
@@ -144,6 +146,7 @@ class SlowFastAva(LightningModule):
         total_acc = 0
         for batch_item in batch:
             videos = batch_item['video']
+            videos = videos.unsqueeze(0)
             bboxes = batch_item['boxes']
             
             labels = batch_item['labels']
