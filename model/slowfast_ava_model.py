@@ -91,7 +91,7 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
-            labels = torch.tensor(labels, dtype=torch.long, device=self.device)
+            # labels = torch.tensor(labels, dtype=torch.long, device=self.device)
             # new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
             # labels = new_label
 
@@ -121,7 +121,7 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
-            labels = torch.tensor(labels, dtype=torch.long, device=self.device)
+            # labels = torch.tensor(labels, dtype=torch.long, device=self.device)
             # new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
             # labels = new_label
 
@@ -150,7 +150,7 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
             
             labels = batch_item['labels']
-            labels = torch.tensor(labels, dtype=torch.long, device=self.device)
+            # labels = torch.tensor(labels, dtype=torch.long, device=self.device)
             # new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
             # labels = new_label
             
