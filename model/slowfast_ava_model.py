@@ -104,7 +104,7 @@ class SlowFastAva(LightningModule):
             outputs = self(videos, bboxes)
 
             loss = F.binary_cross_entropy_with_logits(outputs, labels)
-            acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+            acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass", num_classes=self.num_classes)
 
             total_loss += loss
             total_acc += acc
@@ -137,7 +137,7 @@ class SlowFastAva(LightningModule):
             outputs = self(videos, bboxes)
 
             loss = F.binary_cross_entropy_with_logits(outputs, labels)
-            acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+            acc = accuracy(outputs.softmax(dim=-1), labels, task="multiclass", num_classes=self.num_classes)
 
             total_loss += loss
             total_acc += acc
@@ -168,7 +168,7 @@ class SlowFastAva(LightningModule):
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels} : shape {labels.shape}")
             outputs = self(videos, bboxes)
             loss = F.binary_cross_entropy_with_logits(outputs, labels)
-            acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
+            acc = accuracy(outputs.softmax(dim=-1), labels, task="multiclass", num_classes=self.num_classes)
 
             total_loss += loss
             total_acc += acc
