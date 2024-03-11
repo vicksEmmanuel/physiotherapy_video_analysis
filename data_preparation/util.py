@@ -227,8 +227,6 @@ def ava_inference_transform2(sample_dict, num_frames=4, slow_fast_alpha=None, cr
 
     # boxes = torch.cat([torch.zeros(boxes.shape[0],1), boxes], dim=1)
 
-    print(f"clip {clip}")
-
     # Update sample_dict with transformed data
     transformed_sample_dict = sample_dict.copy()
     transformed_sample_dict["video"] = clip
