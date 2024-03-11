@@ -91,9 +91,13 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
-            labels = torch.tensor(labels, dtype=torch.long, device=self.device)
-            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
-            labels = new_label
+            labels_list = torch.tensor(labels, dtype=torch.long, device=self.device)
+
+            labels = torch.zeros((len(labels_list), self.num_classes), dtype=torch.float, device=self.device)
+            for idx, class_indices in enumerate(labels_list):
+                for class_index in class_indices:
+                    labels[idx, class_index] = 1.0
+
 
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels}")
             outputs = self(videos, bboxes)
@@ -121,9 +125,12 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
-            labels = torch.tensor(labels, dtype=torch.long, device=self.device)
-            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
-            labels = new_label
+            labels_list = torch.tensor(labels, dtype=torch.long, device=self.device)
+
+            labels = torch.zeros((len(labels_list), self.num_classes), dtype=torch.float, device=self.device)
+            for idx, class_indices in enumerate(labels_list):
+                for class_index in class_indices:
+                    labels[idx, class_index] = 1.0
 
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels}")
             outputs = self(videos, bboxes)
@@ -150,9 +157,12 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
             
             labels = batch_item['labels']
-            labels = torch.tensor(labels, dtype=torch.long, device=self.device)
-            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
-            labels = new_label
+            labels_list = torch.tensor(labels, dtype=torch.long, device=self.device)
+
+            labels = torch.zeros((len(labels_list), self.num_classes), dtype=torch.float, device=self.device)
+            for idx, class_indices in enumerate(labels_list):
+                for class_index in class_indices:
+                    labels[idx, class_index] = 1.0
             
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels}")
             outputs = self(videos, bboxes)
