@@ -1,4 +1,4 @@
-from pytorchvideo.models.hub import slow_r50_detection 
+from pytorchvideo.models.hub import slow_r50_detection, slowfast_r50_detection
 from pytorchvideo.models.resnet import create_resnet_with_roi_head
 from torch import nn
 from pytorch_lightning import LightningModule
@@ -39,12 +39,10 @@ from pytorchvideo.models.resnet import create_resnet_with_roi_head
 class CustomSlowR50Detection(nn.Module):
     def __init__(self, pretrained=True, num_classes=80):
         super().__init__()
-        self.base_model = create_resnet_with_roi_head(
-            model_num_class=num_classes
-        )
-        # detection_head = self.base_model.detection_head
-        # num_features = detection_head.proj.in_features
-        # detection_head.proj = nn.Linear(num_features, num_classes)
+        self.base_model = slowfast_r50_detection(pretrained=pretrained)
+        detection_head = self.base_model.detection_head
+        num_features = detection_head.proj.in_features
+        detection_head.proj = nn.Linear(num_features, num_classes)
 
 
     def forward(self, x, bboxes):
