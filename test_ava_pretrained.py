@@ -131,7 +131,7 @@ gif_imgs = []
 total_duration = int(encoded_vid.duration)  # Total duration in seconds
 
 for start_sec in range(0, total_duration):
-    end_sec = start_sec + 1  # Process one second at a time
+    end_sec = start_sec + 5  # Process one second at a time
 
     # Generate clip around the designated time stamps
     inp_imgs = encoded_vid.get_clip(start_sec=start_sec, end_sec=end_sec)
