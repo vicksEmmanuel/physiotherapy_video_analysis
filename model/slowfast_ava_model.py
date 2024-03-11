@@ -48,7 +48,6 @@ class CustomSlowR50Detection(nn.Module):
 
 
     def forward(self, x, bboxes):
-        print(f"Videos shape: {x.shape} Bboxes shape: {bboxes.shape}")
         return self.base_model(x, bboxes)
 
 
@@ -93,15 +92,10 @@ class SlowFastAva(LightningModule):
 
             labels = batch_item['labels']
             labels = torch.tensor(labels, dtype=torch.long, device=self.device)
-            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
-            labels = new_label
+            # new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
+            # labels = new_label
 
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels.shape}")
-
-            print("=====================================")
-
-            print(f" Video {videos} Bboxes {bboxes} Labels {labels}")
-
             outputs = self(videos, bboxes)
 
             loss = F.cross_entropy(outputs, labels)
@@ -128,8 +122,8 @@ class SlowFastAva(LightningModule):
 
             labels = batch_item['labels']
             labels = torch.tensor(labels, dtype=torch.long, device=self.device)
-            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
-            labels = new_label
+            # new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
+            # labels = new_label
 
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels.shape}")
             outputs = self(videos, bboxes)
@@ -157,8 +151,8 @@ class SlowFastAva(LightningModule):
             
             labels = batch_item['labels']
             labels = torch.tensor(labels, dtype=torch.long, device=self.device)
-            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
-            labels = new_label
+            # new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
+            # labels = new_label
             
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels.shape}")
             outputs = self(videos, bboxes)
