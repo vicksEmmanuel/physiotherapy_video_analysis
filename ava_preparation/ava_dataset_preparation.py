@@ -55,6 +55,7 @@ def adjust_boxes(boxes, original_height, original_width, new_height, new_width):
 
 
 def draw_image(sample_1):
+    print(sample_1)
     frame = sample_1['video'].squeeze(0)[0] # Access the first video in the batch
 
     # frame = frame[:,inp_imgs.shape[1]//2,:,:]
@@ -129,6 +130,6 @@ def prepare_ava_dataset(phase='train', config=CFG):
     )
 
     # Shows a picture of the first video in the dataset
-    # visualize_ava_dataset(dataset)
+    visualize_ava_dataset(dataset)
 
     return loader
