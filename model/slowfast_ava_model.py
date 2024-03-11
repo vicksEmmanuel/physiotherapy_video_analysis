@@ -91,14 +91,7 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
-            labels_list = torch.tensor(labels, dtype=torch.long, device=self.device)
-
-            labels = torch.zeros((len(labels_list), self.num_classes), dtype=torch.float, device=self.device)
-            for idx, class_indices in enumerate(labels_list):
-                for class_index in class_indices:
-                    labels[idx, class_index - 1] = 1.0  
-
-
+            labels = self._shared_label_process(labels, num_classes=self.num_classes)
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels} : shape {labels.shape}")
 
             outputs = self(videos, bboxes)
@@ -126,14 +119,10 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
-            labels_list = torch.tensor(labels, dtype=torch.long, device=self.device)
-
-            labels = torch.zeros((len(labels_list), self.num_classes), dtype=torch.float, device=self.device)
-            for idx, class_indices in enumerate(labels_list):
-                for class_index in class_indices:
-                    labels[idx, class_index - 1] = 1.0  
-
+            labels = self._shared_label_process(labels, num_classes=self.num_classes)
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels} : shape {labels.shape}")
+
+
             outputs = self(videos, bboxes)
 
             loss = F.binary_cross_entropy_with_logits(outputs, labels)
@@ -158,14 +147,10 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
             
             labels = batch_item['labels']
-            labels_list = torch.tensor(labels, dtype=torch.long, device=self.device)
-
-            labels = torch.zeros((len(labels_list), self.num_classes), dtype=torch.float, device=self.device)
-            for idx, class_indices in enumerate(labels_list):
-                for class_index in class_indices:
-                    labels[idx, class_index - 1] = 1.0  
-            
+            labels = self._shared_label_process(labels, num_classes=self.num_classes)
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels} : shape {labels.shape}")
+
+
             outputs = self(videos, bboxes)
             loss = F.binary_cross_entropy_with_logits(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, task="multiclass", num_classes=self.num_classes)
@@ -179,3 +164,11 @@ class SlowFastAva(LightningModule):
         metrics = {"test_acc": avg_acc, "test_loss": avg_loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return metrics
+
+    def _shared_label_process(self, labels_list, num_classes=80):
+        labels = torch.zeros((len(labels_list), num_classes), dtype=torch.float, device=self.device)
+    
+        for idx, class_indices in enumerate(labels_list):
+            labels[idx, [x - 1 for x in class_indices]] = 1.0
+        
+        return labels
