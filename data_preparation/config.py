@@ -1,6 +1,6 @@
 class CFG:
     seed = 42
-    num_frames = 4
+    num_frames = 32
     num_classes = 2
     batch_size = 32
     num_workers = 0 # 32
