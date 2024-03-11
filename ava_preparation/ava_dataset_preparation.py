@@ -94,6 +94,7 @@ def prepare_ava_dataset(phase='train', config=CFG):
         for i in range(0, len(allFiles)):
             continue
 
+    # @TODO: This is a temporary fix to avoid re-creating the file
     if not os.path.exists(prepared_frame_list):
         with open(prepared_frame_list, 'w') as prepared_frame_list_file:
             prepared_frame_list_file.write(f"original_vido_id video_id frame_id path labels\n")
@@ -118,6 +119,11 @@ def prepare_ava_dataset(phase='train', config=CFG):
             data_mean=[0.45, 0.45, 0.45], 
             data_std=[0.225, 0.225, 0.225]
         )
+
+
+    prepared_frame_list = f"ava_preparation/real/frame_lists/{phase}.csv"
+    frames_label_file_path = f"ava_preparation/real/annotations/{phase}.csv"
+
 
     dataset = Ava(
         frame_paths_file=prepared_frame_list,

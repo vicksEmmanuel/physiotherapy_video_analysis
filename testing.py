@@ -98,3 +98,32 @@ prepare_ava_dataset()
 #         output_file
 #     ]
 #     subprocess.run(command)
+
+
+
+# list_of_ids = ['1ReZIMmD_8E', '2DUITARAsWQ','2FIHxnZKg6A','2bxKkUgcqpk','32HR3MnDZ8g','5LrOQEt_XVM','1j20qq1JyX4','5BDj0ow5hnA','9Y_l9NsnYE0']
+
+# def rewriter(input_path, output_path):
+#     with open(input_path, 'r') as file:
+#         lines = file.readlines()
+
+#     data = []
+
+#     for line in lines:
+#         elements = line.split(',')
+
+#         if elements[0] in list_of_ids:
+#             data.append(line)
+
+#     # Open the output CSV file
+#     with open(output_path, 'w') as file:
+#         # Write the data to the output CSV file
+#         file.writelines(data)
+
+
+
+
+# rewriter('ava/annotations/ava_train_v2.2.csv', 'ava_preparation/real/annotations/train.csv')
+# rewriter('ava/annotations/ava_val_v2.2.csv', 'ava_preparation/real/annotations/val.csv')
+# # rewriter('ava_preparation/frame_lists/train.csv', 'ava_preparation/real/frame_lists/train.csv')
+# # rewriter('ava_preparation/frame_lists/val.csv', 'ava_preparation/real/frame_lists/val.csv')
