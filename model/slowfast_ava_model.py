@@ -91,14 +91,14 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
-            # labels = torch.tensor(labels, dtype=torch.long, device=self.device)
-            # new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
-            # labels = new_label
+            labels = torch.tensor(labels, dtype=torch.long, device=self.device)
+            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
+            labels = new_label
 
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels}")
             outputs = self(videos, bboxes)
 
-            loss = F.cross_entropy(outputs, labels)
+            loss = F.binary_cross_entropy_with_logits(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
             total_loss += loss
@@ -121,14 +121,14 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
-            # labels = torch.tensor(labels, dtype=torch.long, device=self.device)
-            # new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
-            # labels = new_label
+            labels = torch.tensor(labels, dtype=torch.long, device=self.device)
+            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
+            labels = new_label
 
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels}")
             outputs = self(videos, bboxes)
 
-            loss = F.cross_entropy(outputs, labels)
+            loss = F.binary_cross_entropy_with_logits(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
             total_loss += loss
@@ -150,13 +150,13 @@ class SlowFastAva(LightningModule):
             bboxes = batch_item['boxes']
             
             labels = batch_item['labels']
-            # labels = torch.tensor(labels, dtype=torch.long, device=self.device)
-            # new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
-            # labels = new_label
+            labels = torch.tensor(labels, dtype=torch.long, device=self.device)
+            new_label = torch.nn.functional.one_hot(labels, self.num_classes + 1)
+            labels = new_label
             
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels}")
             outputs = self(videos, bboxes)
-            loss = F.cross_entropy(outputs, labels)
+            loss = F.binary_cross_entropy_with_logits(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
             total_loss += loss
