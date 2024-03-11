@@ -87,13 +87,14 @@ class SlowFastAva(LightningModule):
         for batch_item in batch:
             print(f"Video Name: {batch_item['video_name']}")
             videos = batch_item['video']
+            videos = videos.unsqueeze(0)
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
             labels = self._shared_label_process(labels, num_classes=self.num_classes)
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels} : shape {labels.shape}")
 
-            outputs = self(videos.unsqueeze(0), bboxes)
+            outputs = self(videos, bboxes)
 
             loss = F.binary_cross_entropy_with_logits(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass", num_classes=self.num_classes)
@@ -116,6 +117,7 @@ class SlowFastAva(LightningModule):
         for batch_item in batch:
             print(f"Video Name: {batch_item['video_name']}")
             videos = batch_item['video']
+            videos = videos.unsqueeze(0)
             bboxes = batch_item['boxes']
 
             labels = batch_item['labels']
@@ -123,7 +125,7 @@ class SlowFastAva(LightningModule):
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels} : shape {labels.shape}")
 
 
-            outputs = self(videos.unsqueeze(0), bboxes)
+            outputs = self(videos, bboxes)
 
             loss = F.binary_cross_entropy_with_logits(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, task="multiclass", num_classes=self.num_classes)
@@ -144,6 +146,7 @@ class SlowFastAva(LightningModule):
         total_acc = 0
         for batch_item in batch:
             videos = batch_item['video']
+            videos = videos.unsqueeze(0)
             bboxes = batch_item['boxes']
             
             labels = batch_item['labels']
@@ -151,7 +154,7 @@ class SlowFastAva(LightningModule):
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels} : shape {labels.shape}")
 
 
-            outputs = self(videos.unsqueeze(0), bboxes)
+            outputs = self(videos, bboxes)
             loss = F.binary_cross_entropy_with_logits(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, task="multiclass", num_classes=self.num_classes)
 

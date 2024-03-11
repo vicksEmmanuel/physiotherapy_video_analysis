@@ -113,7 +113,7 @@ def prepare_ava_dataset(phase='train', config=CFG):
         return ava_inference_transform2(
             sample_dict, 
             num_frames = config.num_frames, 
-            slow_fast_alpha = 4.0, 
+            slow_fast_alpha = None,
             crop_size=256, 
             data_mean=[0.45, 0.45, 0.45], 
             data_std=[0.225, 0.225, 0.225]
@@ -135,6 +135,6 @@ def prepare_ava_dataset(phase='train', config=CFG):
     )
 
     # Shows a picture of the first video in the dataset
-    # visualize_ava_dataset(dataset)
+    visualize_ava_dataset(dataset)
 
     return loader
