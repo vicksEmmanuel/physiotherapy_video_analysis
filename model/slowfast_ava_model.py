@@ -39,7 +39,7 @@ from pytorchvideo.models.resnet import create_resnet_with_roi_head
 class CustomSlowR50Detection(nn.Module):
     def __init__(self, pretrained=True, num_classes=80):
         super().__init__()
-        self.base_model = slowfast_r50_detection(pretrained=pretrained)
+        self.base_model = slow_r50_detection(pretrained=pretrained)
         detection_head = self.base_model.detection_head
         num_features = detection_head.proj.in_features
         detection_head.proj = nn.Linear(num_features, num_classes)
@@ -61,7 +61,7 @@ class SlowFastAva(LightningModule):
         self.load()
 
     def load(self):
-        self.model = CustomSlowR50Detection(pretrained=True, num_classes=self.num_classes)
+        self.model = CustomSlowR50Detection(pretrained=False, num_classes=self.num_classes)
 
     def forward(self, x, bboxes):
         print(f"Input shape before model: {x.shape}")  # Debug print
