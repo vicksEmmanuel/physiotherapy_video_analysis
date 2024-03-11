@@ -112,7 +112,7 @@ def prepare_ava_dataset(phase='train', config=CFG):
     frames_label_file_path = f"ava/annotations/ava_{phase}_v2.2.csv"
 
     def transform(sample_dict):
-        return ava_inference_transform2(sample_dict, num_frames = config.num_frames)
+        return ava_inference_transform2(sample_dict, num_frames = config.num_frames, slow_fast_alpha = 4.0)
 
     dataset = Ava(
         frame_paths_file=prepared_frame_list,
