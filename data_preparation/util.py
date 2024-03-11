@@ -230,7 +230,13 @@ def ava_inference_transform2(sample_dict, num_frames=4, crop_size=256, data_mean
 
     # Update sample_dict with transformed data
     transformed_sample_dict = sample_dict.copy()
+
+    print(f"Clip: {clip}")
+
     transformed_sample_dict["video"] = clip.unsqueeze(0)
+
+    print(f"New clip: {clip.unsqueeze(0)}")
+
 
     if len(boxes) > 0:
         transformed_sample_dict["boxes"] = torch.from_numpy(boxes_with_labels).float()
