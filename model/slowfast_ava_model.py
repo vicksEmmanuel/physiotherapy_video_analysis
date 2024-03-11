@@ -59,7 +59,6 @@ class SlowFastAva(LightningModule):
         self.drop_prob = drop_prob
         self.num_classes = 80 # num_classes
         self.num_frames = num_frames
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.save_hyperparameters()
 
         self.load()
@@ -98,7 +97,12 @@ class SlowFastAva(LightningModule):
             labels = new_label
 
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels.shape}")
-            outputs = self(videos.to(self.device), bboxes.to(self.device))
+
+            print("=====================================")
+
+            print(f" Video {videos} Bboxes {bboxes} Labels {labels}")
+
+            outputs = self(videos, bboxes)
 
             loss = F.cross_entropy(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
@@ -128,8 +132,7 @@ class SlowFastAva(LightningModule):
             labels = new_label
 
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels.shape}")
-            outputs = self(videos.to(self.device), bboxes.to(self.device))
-
+            outputs = self(videos, bboxes)
 
             loss = F.cross_entropy(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
@@ -158,8 +161,7 @@ class SlowFastAva(LightningModule):
             labels = new_label
             
             print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels.shape}")
-            outputs = self(videos.to(self.device), bboxes.to(self.device))
-
+            outputs = self(videos, bboxes)
             loss = F.cross_entropy(outputs, labels)
             acc = accuracy(outputs.softmax(dim=-1), labels, num_classes=self.num_classes)
 
