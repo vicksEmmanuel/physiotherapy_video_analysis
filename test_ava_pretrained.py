@@ -29,7 +29,7 @@ import cv2
 from model.slowfast_ava_model import SlowFastAva  # Ensure this import matches your project structure
 from data_preparation.util import single_transformer
 from pytorchvideo.models.resnet import create_resnet, create_resnet_with_roi_head
-
+from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 
 
 video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31.mp4'
@@ -46,8 +46,8 @@ model.to(device)
 print("Model loaded.")
 
 actions = Action().action
-label_map = {i: actions[i] for i in range(0, len(actions))}
-# video_visualizer = VideoVisualizer(len(Action().action), label_map, top_k=3, mode="thres",thres=0.5)
+label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava_action_list.pbtxt')
+video_visualizer = VideoVisualizer(80, label_map, top_k=3, mode="thres",thres=0.5)
 
 print(f"Video action loaded. {actions}")
 
@@ -169,9 +169,29 @@ for start_sec in range(0, total_duration):
     # The model is trained on AVA and AVA labels are 1 indexed so, prepend 0 to convert to 0 index.
     preds = torch.cat([torch.zeros(preds.shape[0],1), preds], dim=1)
 
+    # Plot predictions on the video and save for later visualization.
+    inp_imgs = inp_imgs.permute(1,2,3,0)
+    inp_imgs = inp_imgs/255.0
+    out_img_pred = video_visualizer.draw_clip_range(inp_imgs, preds, predicted_boxes)
+    gif_imgs += out_img_pred
+
 
     
     
    
 
 print("Finished generating predictions.")
+
+
+height, width = gif_imgs[0].shape[0], gif_imgs[0].shape[1]
+
+vide_save_path = 'output.mp4'
+video = cv2.VideoWriter(vide_save_path,cv2.VideoWriter_fourcc(*'DIVX'), 7, (width,height))
+
+for image in gif_imgs:
+    img = (255*image).astype(np.uint8)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    video.write(img)
+video.release()
+
+print('Predictions are saved to the video file: ', vide_save_path)
