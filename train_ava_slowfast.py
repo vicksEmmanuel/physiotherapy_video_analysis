@@ -1,4 +1,4 @@
-from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks import ModelCheckpoint, RichProgressBar
 from pytorch_lightning import Trainer, seed_everything
 from data_preparation.action_dataset import ActionDataset
 from data_preparation.config import CFG
@@ -76,7 +76,10 @@ def train(config):
         num_sanity_val_steps=0,
         # overfit_batches=0.05,
         # callbacks=[lr_monitor],
-        callbacks=[checkpoint_callback],
+        callbacks=[
+            RichProgressBar(),
+            checkpoint_callback
+        ],
     )
 
     trainer.fit(model, loaders['train'], loaders['val'])

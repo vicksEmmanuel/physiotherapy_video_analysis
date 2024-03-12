@@ -134,10 +134,10 @@ def prepare_ava_dataset(phase='train', config=CFG):
         transform=transform
     )
 
-    dataset = AvaDataset(iterable_dataset)
+    # dataset = AvaDataset(iterable_dataset)
 
     loader = DataLoader(
-        dataset, 
+        iterable_dataset, 
         batch_size=config.batch_size,
         num_workers=config.num_workers,
         collate_fn=lambda x: x 
