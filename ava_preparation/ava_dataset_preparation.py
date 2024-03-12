@@ -1,3 +1,4 @@
+from torch.utils.data import IterableDataset
 import torch
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
@@ -125,13 +126,15 @@ def prepare_ava_dataset(phase='train', config=CFG):
     frames_label_file_path = f"ava_preparation/real/annotations/{phase}.csv"
 
 
-    dataset = Ava(
+    iterable_dataset = Ava(
         frame_paths_file=prepared_frame_list,
         frame_labels_file=frames_label_file_path,
         clip_sampler=make_clip_sampler("random", 20.0),
         label_map_file=label_map_path,
         transform=transform
     )
+
+    dataset = AvaDataset(iterable_dataset)
 
     loader = DataLoader(
         dataset, 
@@ -142,5 +145,18 @@ def prepare_ava_dataset(phase='train', config=CFG):
 
     # Shows a picture of the first video in the dataset
     # visualize_ava_dataset(dataset)
-
     return loader
+
+
+
+class AvaDataset(IterableDataset):
+    def __init__(self, iterable_dataset):
+        self.data = []
+        for item in iterable_dataset:
+            self.data.append(item)
+
+    def __len__(self):
+        return len(self.data)
+
+   def __getitem__(self, idx):
+        return self.data[idx]
