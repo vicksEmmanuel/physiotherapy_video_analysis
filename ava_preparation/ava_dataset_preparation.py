@@ -1,3 +1,4 @@
+from torch.utils.data import IterableDataset
 import torch
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
@@ -125,7 +126,7 @@ def prepare_ava_dataset(phase='train', config=CFG):
     frames_label_file_path = f"ava_preparation/real/annotations/{phase}.csv"
 
 
-    dataset = Ava(
+    iterable_dataset = Ava(
         frame_paths_file=prepared_frame_list,
         frame_labels_file=frames_label_file_path,
         clip_sampler=make_clip_sampler("random", 20.0),
@@ -133,8 +134,14 @@ def prepare_ava_dataset(phase='train', config=CFG):
         transform=transform
     )
 
+    data = []
+    for item in iterable_dataset:
+        data.append(item)
+
+    print(len(data))
+
     loader = DataLoader(
-        dataset, 
+        iterable_dataset, 
         batch_size=config.batch_size,
         num_workers=config.num_workers,
         collate_fn=lambda x: x 
@@ -144,3 +151,17 @@ def prepare_ava_dataset(phase='train', config=CFG):
     # visualize_ava_dataset(dataset)
 
     return loader
+
+
+
+class MyIterableDataset(IterableDataset):
+    def __init__(self, data, transform=None):
+        self.data = data
+        self.transform = transform
+
+    def __iter__(self):
+        for item in self.data:
+            yield self.transform(item) if self.transform else item
+
+    def __len__(self):  # Attempt to provide a sensible length if possible
+        return len(self.data)  # Or any other estimated length
