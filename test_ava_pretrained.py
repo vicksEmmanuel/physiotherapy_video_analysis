@@ -1,3 +1,4 @@
+from get_audio import get_audio
 from PIL import Image, ImageDraw
 import os
 from torchvision.transforms.functional import normalize as normalize_image
@@ -27,7 +28,7 @@ from detectron2.utils.video_visualizer import VideoVisualizer
 import pytorchvideo.models.slowfast as SlowFastModel
 import cv2
 from model.slowfast_ava_model import SlowFastAva  # Ensure this import matches your project structure
-from data_preparation.util import single_transformer
+from data_preparation.util import single_transformer,ava_inference_transform
 from pytorchvideo.models.resnet import create_resnet, create_resnet_with_roi_head
 from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 
@@ -66,132 +67,100 @@ def get_person_bboxes(inp_img, predictor):
     predicted_boxes = boxes[np.logical_and(classes==0, scores>0.75 )].tensor.cpu() # only person
     return predicted_boxes
 
-def ava_inference_transform(
-    clip,
-    boxes,
-    num_frames = 4, #if using slowfast_r50_detection, change this to 32
-    crop_size = 256,
-    data_mean = [0.45, 0.45, 0.45],
-    data_std = [0.225, 0.225, 0.225],
-    slow_fast_alpha = None, #if using slowfast_r50_detection, change this to 4
-):
-
-    boxes = np.array(boxes)
-    ori_boxes = boxes.copy()
-
-    # Image [0, 255] -> [0, 1].
-    clip = uniform_temporal_subsample(clip, num_frames)
-    clip = clip.float()
-    clip = clip / 255.0
-
-    height, width = clip.shape[2], clip.shape[3]
-    # The format of boxes is [x1, y1, x2, y2]. The input boxes are in the
-    # range of [0, width] for x and [0,height] for y
-    boxes = clip_boxes_to_image(boxes, height, width)
-
-    # Resize short side to crop_size. Non-local and STRG uses 256.
-    clip, boxes = short_side_scale_with_boxes(
-        clip,
-        size=crop_size,
-        boxes=boxes,
-    )
-
-    # Normalize images by mean and std.
-    clip = normalize(
-        clip,
-        np.array(data_mean, dtype=np.float32),
-        np.array(data_std, dtype=np.float32),
-    )
-
-    boxes = clip_boxes_to_image(
-        boxes, clip.shape[2],  clip.shape[3]
-    )
-
-    # Incase of slowfast, generate both pathways
-    if slow_fast_alpha is not None:
-        fast_pathway = clip
-        # Perform temporal sampling from the fast pathway.
-        slow_pathway = torch.index_select(
-            clip,
-            1,
-            torch.linspace(
-                0, clip.shape[1] - 1, clip.shape[1] // slow_fast_alpha
-            ).long(),
-        )
-        clip = [slow_pathway, fast_pathway]
-
-    return clip, torch.from_numpy(boxes), ori_boxes
-
 out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
 
-gif_imgs = []
-total_duration = int(encoded_vid.duration)  # Total duration in seconds
+def generate_actions_from_video(video_path):
+    gif_imgs = []
+    confidence_threshold = 0.5
+    actions_per_second = []
+    total_duration = int(encoded_vid.duration)  # Total duration in seconds
+    audio_timestamps =  get_audio(video_path, total_duration=total_duration)
 
-for start_sec in range(0, total_duration):
-    end_sec = start_sec + 5  # Process one second at a time
+    for i in range(0,len(audio_timestamps)):
+        start_sec = audio_timestamps[i]["start"]
+        end_sec = audio_timestamps[i]["end"]
 
-    # Generate clip around the designated time stamps
-    inp_imgs = encoded_vid.get_clip(start_sec=start_sec, end_sec=end_sec)
-    inp_imgs = inp_imgs['video']
+        # Generate clip around the designated time stamps
+        inp_imgs = encoded_vid.get_clip(start_sec=start_sec, end_sec=end_sec)
+        inp_imgs = inp_imgs['video']
+        
+
+        # Generate people bbox predictions using Detectron2's off the self pre-trained predictor
+        # We use the the middle image in each clip to generate the bounding boxes.
+        inp_img = inp_imgs[:,inp_imgs.shape[1]//2,:,:]
+        inp_img = inp_img.permute(1,2,0)
+
+        # Predicted boxes are of the form List[(x_1, y_1, x_2, y_2)]
+        predicted_boxes = get_person_bboxes(inp_img, predictor)
+        if len(predicted_boxes) == 0:
+            print(f"No person detected in second {start_sec} - {end_sec}.")
+            continue
+
+        print(f"Predicted boxes for second {start_sec} - {end_sec}: {predicted_boxes.numpy()}")
+
+        inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
+
+        print(f"Inputs shape: {inputs.shape}")
+        print(f"Bounding boxes shape: {inp_boxes.shape}")
+
+        inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0],1), inp_boxes], dim=1)
+        inputs = inputs.unsqueeze(0)
+
+        print(f"Inputs shape: {inputs.shape}")
+        print(f"Bounding boxes shape: {inp_boxes.shape}")
+
+        # Generate actions predictions for the bounding boxes in the clip.
+        # The model here takes in the pre-processed video clip and the detected bounding boxes.
+        preds = model(inputs.to(device), inp_boxes.to(device))
+
+        # print(f"Predictions for second {start_sec} - {end_sec}: {preds}")
+
+        preds= preds.to('cpu')
+        # The model is trained on AVA and AVA labels are 1 indexed so, prepend 0 to convert to 0 index.
+        preds = torch.cat([torch.zeros(preds.shape[0],1), preds], dim=1)
+
+        # Plot predictions on the video and save for later visualization.
+        inp_imgs = inp_imgs.permute(1,2,3,0)
+        inp_imgs = inp_imgs/255.0
+
+        pred_classes = preds.indices[0]
+        confidences = preds.values[0] 
+        
+        actions_this_second = []
+        for idx, confidence in enumerate(confidences):
+            if confidence > confidence_threshold:
+                action_name = Action().action[int(pred_classes[idx])]
+                actions_this_second.append(action_name)
+            else:
+                actions_this_second.append("")  # Placeholder for low confidence predictions
+
+        # Log or use the actions_this_second as needed
+        if actions_this_second:  # Check if the list is not empty
+            print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
+            actions_per_second.append({
+                "actions": actions_this_second,
+                "text": audio_timestamps[i]["text"],
+            })
+        else:
+            print(f"No confident actions for second {start_sec}-{end_sec}.")
+
+        out_img_pred = video_visualizer.draw_clip_range(inp_imgs, preds, predicted_boxes)
+        gif_imgs += out_img_pred
     
-
-    # Generate people bbox predictions using Detectron2's off the self pre-trained predictor
-    # We use the the middle image in each clip to generate the bounding boxes.
-    inp_img = inp_imgs[:,inp_imgs.shape[1]//2,:,:]
-    inp_img = inp_img.permute(1,2,0)
-
-    # Predicted boxes are of the form List[(x_1, y_1, x_2, y_2)]
-    predicted_boxes = get_person_bboxes(inp_img, predictor)
-    if len(predicted_boxes) == 0:
-        print(f"No person detected in second {start_sec} - {end_sec}.")
-        continue
-
-    print(f"Predicted boxes for second {start_sec} - {end_sec}: {predicted_boxes.numpy()}")
-
-    inputs, inp_boxes, _ = ava_inference_transform(inp_imgs, predicted_boxes.numpy())
-
-    print(f"Inputs shape: {inputs.shape}")
-    print(f"Bounding boxes shape: {inp_boxes.shape}")
-
-    inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0],1), inp_boxes], dim=1)
-    inputs = inputs.unsqueeze(0)
-
-    print(f"Inputs shape: {inputs.shape}")
-    print(f"Bounding boxes shape: {inp_boxes.shape}")
-
-    # Generate actions predictions for the bounding boxes in the clip.
-    # The model here takes in the pre-processed video clip and the detected bounding boxes.
-    preds = model(inputs.to(device), inp_boxes.to(device))
-
-    # print(f"Predictions for second {start_sec} - {end_sec}: {preds}")
-
-    preds= preds.to('cpu')
-    # The model is trained on AVA and AVA labels are 1 indexed so, prepend 0 to convert to 0 index.
-    preds = torch.cat([torch.zeros(preds.shape[0],1), preds], dim=1)
-
-    # Plot predictions on the video and save for later visualization.
-    inp_imgs = inp_imgs.permute(1,2,3,0)
-    inp_imgs = inp_imgs/255.0
-    out_img_pred = video_visualizer.draw_clip_range(inp_imgs, preds, predicted_boxes)
-    gif_imgs += out_img_pred
+    print("Finished generating predictions.")
 
 
-    
-    
-   
+    height, width = gif_imgs[0].shape[0], gif_imgs[0].shape[1]
 
-print("Finished generating predictions.")
+    vide_save_path = 'output.mp4'
+    video = cv2.VideoWriter(vide_save_path,cv2.VideoWriter_fourcc(*'DIVX'), 7, (width,height))
 
+    for image in gif_imgs:
+        img = (255*image).astype(np.uint8)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        video.write(img)
+    video.release()
 
-height, width = gif_imgs[0].shape[0], gif_imgs[0].shape[1]
+    print('Predictions are saved to the video file: ', vide_save_path)
 
-vide_save_path = 'output.mp4'
-video = cv2.VideoWriter(vide_save_path,cv2.VideoWriter_fourcc(*'DIVX'), 7, (width,height))
-
-for image in gif_imgs:
-    img = (255*image).astype(np.uint8)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    video.write(img)
-video.release()
-
-print('Predictions are saved to the video file: ', vide_save_path)
+    return actions_per_second
