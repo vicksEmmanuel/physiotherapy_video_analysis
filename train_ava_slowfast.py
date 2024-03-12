@@ -71,7 +71,7 @@ def train(config):
         # logger=wandb_logger,
         # accelerator='cpu', # 'ddp' for distributed computing
         accelerator='gpu', # 'ddp' for distributed computing
-        devices=1, # Use 1 GPU
+        devices=2, # Use 1 GPU
         max_epochs=config.num_epochs,
         num_sanity_val_steps=0,
         # overfit_batches=0.05,
