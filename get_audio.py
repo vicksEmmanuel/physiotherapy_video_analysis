@@ -91,8 +91,12 @@ def get_audio(video_path, total_duration):
     # Load the model
     model = whisper.load_model("base")
 
+    options = {
+        "language": "en",
+    }
+
     # Process the audio
-    result = model.transcribe(SPEECH_FILE)
+    result = model.transcribe(SPEECH_FILE, task="translate", **options)
     segments = result['segments']
 
     # Calling the function to insert silent segments
