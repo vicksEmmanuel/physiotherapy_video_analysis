@@ -75,6 +75,6 @@ def generate_actions_from_video(video_path):
     return actions_per_second
 
 
-video_path = 'videos/Postural Analysis Lateral.mp4'
+video_path = 'videos/Postural Assessment.mp4'
 all_actions = generate_actions_from_video(video_path)
 print(all_actions)
