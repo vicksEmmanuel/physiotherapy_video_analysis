@@ -140,6 +140,7 @@ def prepare_ava_dataset(phase='train', config=CFG):
         iterable_dataset, 
         batch_size=config.batch_size,
         num_workers=config.num_workers,
+        num_batches_per_epoch=500,
         collate_fn=lambda x: x 
     )
 
