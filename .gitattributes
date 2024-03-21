@@ -5,3 +5,4 @@ ava/frame_lists/train.csv filter=lfs diff=lfs merge=lfs -text
 *.csv filter=lfs diff=lfs merge=lfs -text
 ava/frames/** filter=lfs diff=lfs merge=lfs -text
 ava/frames/* filter=lfs diff=lfs merge=lfs -text
+ava/videos/* filter=lfs diff=lfs merge=lfs -text
