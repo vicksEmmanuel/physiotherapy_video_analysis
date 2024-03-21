@@ -5,7 +5,7 @@ from pytorch_lightning import LightningModule
 import torch
 from torch.nn import functional as F
 from torchmetrics.functional import accuracy
-
+from pytorchvideo.models import x3d
 import torch
 import torch.nn as nn
 from pytorchvideo.models.resnet import create_resnet_with_roi_head
@@ -80,91 +80,37 @@ class SlowFastAva(LightningModule):
             sch.step(self.trainer.callback_metrics["valid_loss"])
 
     def training_step(self, batch, batch_idx):
-        print("Training step")
+        print("Training step ", batch_idx)
 
-        total_loss = 0
-        total_acc = 0
-        for batch_item in batch:
-            print(f"Video Name: {batch_item['video_name']}")
-            videos = batch_item['video']
-            videos = videos.unsqueeze(0)
-            bboxes = batch_item['boxes']
-
-            labels = batch_item['labels']
-            labels = self._shared_label_process(labels, num_classes=self.num_classes)
-            print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels} : shape {labels.shape}")
-
-            outputs = self(videos, bboxes)
-
-            loss = F.binary_cross_entropy_with_logits(outputs, labels)
-            acc = accuracy(outputs.softmax(dim=-1), labels,task="multiclass", num_classes=self.num_classes)
-
-            total_loss += loss
-            total_acc += acc
-
-        avg_loss = total_loss / len(batch)
-        avg_acc = total_acc / len(batch)
-
-        metrics = {"train_acc": avg_acc, "train_loss": avg_loss}
+        videos, bboxes, labels = batch['video'], batch['boxes'], batch['labels']
+        labels = self._shared_label_process(labels, num_classes=self.num_classes)
+        outputs = self(videos, bboxes)
+        loss = F.binary_cross_entropy_with_logits(outputs, labels)
+        acc = accuracy(outputs.softmax(dim=-1), labels, task="multiclass", num_classes=self.num_classes)
+        metrics = {"train_acc": acc, "train_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
-        return avg_loss
+        return metrics
 
     def validation_step(self, batch, batch_idx):
         print("Training step")
 
-        total_loss = 0
-        total_acc = 0
-        for batch_item in batch:
-            print(f"Video Name: {batch_item['video_name']}")
-            videos = batch_item['video']
-            videos = videos.unsqueeze(0)
-            bboxes = batch_item['boxes']
-
-            labels = batch_item['labels']
-            labels = self._shared_label_process(labels, num_classes=self.num_classes)
-            print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels} : shape {labels.shape}")
-
-
-            outputs = self(videos, bboxes)
-
-            loss = F.binary_cross_entropy_with_logits(outputs, labels)
-            acc = accuracy(outputs.softmax(dim=-1), labels, task="multiclass", num_classes=self.num_classes)
-
-            total_loss += loss
-            total_acc += acc
-
-        avg_loss = total_loss / len(batch)
-        avg_acc = total_acc / len(batch)
-
-        metrics = {"valid_acc": avg_acc, "valid_loss": avg_loss}
+        videos, bboxes, labels = batch['video'], batch['boxes'], batch['labels']
+        labels = self._shared_label_process(labels, num_classes=self.num_classes)
+        outputs = self(videos, bboxes)
+        loss = F.binary_cross_entropy_with_logits(outputs, labels)
+        acc = accuracy(outputs.softmax(dim=-1), labels, task="multiclass", num_classes=self.num_classes)
+        metrics = {"valid_acc": acc, "valid_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return metrics
 
     def test_step(self, batch, batch_idx):
 
-        total_loss = 0
-        total_acc = 0
-        for batch_item in batch:
-            videos = batch_item['video']
-            videos = videos.unsqueeze(0)
-            bboxes = batch_item['boxes']
-            
-            labels = batch_item['labels']
-            labels = self._shared_label_process(labels, num_classes=self.num_classes)
-            print(f"Videos shape: {videos.shape} Bboxes shape: {bboxes.shape}  Labels shape: {labels} : shape {labels.shape}")
-
-
-            outputs = self(videos, bboxes)
-            loss = F.binary_cross_entropy_with_logits(outputs, labels)
-            acc = accuracy(outputs.softmax(dim=-1), labels, task="multiclass", num_classes=self.num_classes)
-
-            total_loss += loss
-            total_acc += acc
-
-        avg_loss = total_loss / len(batch)
-        avg_acc = total_acc / len(batch)
-        
-        metrics = {"test_acc": avg_acc, "test_loss": avg_loss}
+        videos, bboxes, labels = batch['video'], batch['boxes'], batch['labels']
+        labels = self._shared_label_process(labels, num_classes=self.num_classes)
+        outputs = self(videos, bboxes)
+        loss = F.binary_cross_entropy_with_logits(outputs, labels)
+        acc = accuracy(outputs.softmax(dim=-1), labels, task="multiclass", num_classes=self.num_classes)
+        metrics = {"test_acc": acc, "test_loss": loss}
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return metrics
 
