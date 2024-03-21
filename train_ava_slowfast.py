@@ -2,7 +2,6 @@ from pytorch_lightning.callbacks import ModelCheckpoint, RichProgressBar
 from pytorch_lightning import Trainer, seed_everything
 from data_preparation.action_dataset import ActionDataset
 from data_preparation.config import CFG
-from data_preparation.util import get_loader, get_transformer,get_new_transformer
 import cv2
 import numpy as np
 import os
@@ -70,7 +69,7 @@ def train(config):
     trainer = Trainer(
         # logger=wandb_logger,
         # accelerator='cpu', # 'ddp' for distributed computing
-        accelerator='gpu', # 'ddp' for distributed computing
+        # accelerator='gpu', # 'ddp' for distributed computing
         devices=1, # Use 1 GPU
         max_epochs=config.num_epochs,
         num_sanity_val_steps=0,

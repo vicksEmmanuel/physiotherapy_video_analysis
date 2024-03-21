@@ -5,9 +5,9 @@ if [[ ! -d "${DATA_DIR}" ]]; then
   mkdir -p ${DATA_DIR}
 fi
 
-wget https://s3.amazonaws.com/ava-dataset/annotations/ava_file_names_trainval_v2.1.txt
+# wget https://s3.amazonaws.com/ava-dataset/annotations/ava_file_names_trainval_v2.1.txt
 
-for line in $(cat ava_file_names_trainval_v2.1.txt)
+for line in $(cat ava_test.txt)
 do
   wget https://s3.amazonaws.com/ava-dataset/trainval/$line -P ${DATA_DIR}
 done

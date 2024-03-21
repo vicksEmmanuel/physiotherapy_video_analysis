@@ -7,6 +7,8 @@ opencv-python
 mediapipe
 matplotlib
 albumentations
+torch
+torchvision==0.15.0
 pytorchvideo
 pytorch-lightning
 pytorch_lightning
