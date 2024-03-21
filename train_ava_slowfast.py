@@ -73,6 +73,7 @@ def train(config):
         devices=1, # Use 1 GPU
         max_epochs=config.num_epochs,
         num_sanity_val_steps=0,
+        max_steps_per_epoch=500,
         # overfit_batches=0.05,
         # callbacks=[lr_monitor],
         callbacks=[
