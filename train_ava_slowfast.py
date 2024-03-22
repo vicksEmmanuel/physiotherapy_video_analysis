@@ -64,6 +64,7 @@ def train(config):
         mode='min', # Mode 'min' is for loss, 'max' for accuracy
         every_n_epochs=1, # Save checkpoint every epoch
         save_last=True, # Save the last model regardless of the monitored metric
+        
     )
 
     trainer = Trainer(
@@ -76,18 +77,15 @@ def train(config):
         num_sanity_val_steps=0,
         limit_train_batches=config.limit_step_per_batch,
         limit_val_batches=config.limit_step_per_batch,
-        limit_test_batches=config.limit_step_per_batch,        
+        limit_test_batches=config.limit_step_per_batch,    
         callbacks=[
             RichProgressBar(),
             checkpoint_callback
         ],
     )
 
-    # trainer.fit(model, loaders['train'], loaders['val'])
+    trainer.fit(model, loaders['train'], loaders['val'])
     # trainer.test(model, loaders['test'])
-
-    last_checkpoint = "ava_checkpoints/last.ckpt"
-    trainer.fit(model, ckpt_path=last_checkpoint)
 
 train(CFG)
     
