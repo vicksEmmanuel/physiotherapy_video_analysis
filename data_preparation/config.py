@@ -12,3 +12,4 @@ class CFG:
     height = 224
     width = 224
     slowfast = True
+    limit_step_per_batch=0.5

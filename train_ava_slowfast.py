@@ -60,7 +60,7 @@ def train(config):
         filename='{epoch}-{val_loss:.2f}', # File name, which can include values from logging
         save_top_k=1, # Save the top 3 models according to the metric monitored below
         verbose=True,
-        monitor='valid_loss', # Metric to monitor for improvement
+        monitor='valid_loss', # Metric t o monitor for improvement
         mode='min', # Mode 'min' is for loss, 'max' for accuracy
         every_n_epochs=1, # Save checkpoint every epoch
         save_last=True, # Save the last model regardless of the monitored metric
@@ -70,11 +70,13 @@ def train(config):
         # logger=wandb_logger,
         # accelerator='cpu', # 'ddp' for distributed computing
         # accelerator='gpu', # 'ddp' for distributed computing
-        devices=1, # Use 1 GPU
+        # devices=1, # Use 1 GPU
+        # overfit_batches=0.05,
         max_epochs=config.num_epochs,
         num_sanity_val_steps=0,
-        # overfit_batches=0.05,
-        # callbacks=[lr_monitor],
+        limit_train_batches=config.limit_step_per_batch,
+        limit_val_batches=config.limit_step_per_batch,
+        limit_test_batches=config.limit_step_per_batch,        
         callbacks=[
             RichProgressBar(),
             checkpoint_callback
