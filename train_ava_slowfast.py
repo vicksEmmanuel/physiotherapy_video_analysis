@@ -83,8 +83,11 @@ def train(config):
         ],
     )
 
-    trainer.fit(model, loaders['train'], loaders['val'])
+    # trainer.fit(model, loaders['train'], loaders['val'])
     # trainer.test(model, loaders['test'])
+
+    last_checkpoint = "ava_checkpoints/last.ckpt"
+    trainer.fit(model, ckpt_path=last_checkpoint)
 
 train(CFG)
     
