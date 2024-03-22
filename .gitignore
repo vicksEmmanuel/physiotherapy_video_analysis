@@ -14,6 +14,7 @@ ava_preparation/__pycache__/
 model/__pycache__/
 ava/.DS_Store
 ava/frames
+ava/videos
 ava/videos_15min/
 data_preparation/__pycache__/PackPathwayTransform.cpython-311.pyc
 data_preparation/__pycache__/action_dataset.cpython-311.pyc
