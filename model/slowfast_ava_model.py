@@ -78,6 +78,8 @@ class SlowFastAva(LightningModule):
 
         if isinstance(sch, torch.optim.lr_scheduler.ReduceLROnPlateau):
             sch.step(self.trainer.callback_metrics["valid_loss"])
+        else:
+            sch.step()
 
     def training_step(self, batch, batch_idx):
         print("Training step")
@@ -106,11 +108,12 @@ class SlowFastAva(LightningModule):
         avg_acc = total_acc / len(batch)
 
         metrics = {"train_acc": avg_acc, "train_loss": avg_loss}
+        print(metrics)
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return avg_loss
 
     def validation_step(self, batch, batch_idx):
-        print("Training step")
+        print("Validation step")
 
         total_loss = 0
         total_acc = 0
@@ -136,7 +139,8 @@ class SlowFastAva(LightningModule):
         avg_loss = total_loss / len(batch)
         avg_acc = total_acc / len(batch)
 
-        metrics = {"valid_acc": avg_acc, "valid_loss": avg_loss}
+        metrics = {"valid_loss": avg_loss, "valid_acc": avg_acc}
+        print(metrics)
         self.log_dict(metrics, on_step=False, on_epoch=True)
         return metrics
 
