@@ -15,5 +15,4 @@ pytorch_lightning
 requests
 openai-whisper
 pandas
-git+https://github.com/facebookresearch/detectron2.git
 rich
