@@ -8,12 +8,11 @@ mediapipe
 matplotlib
 albumentations
 torch
-torchvision==0.15.0
+torchvision
 pytorchvideo
 pytorch-lightning
 pytorch_lightning
 requests
 openai-whisper
 pandas
-git+https://github.com/facebookresearch/detectron2.git
 rich
