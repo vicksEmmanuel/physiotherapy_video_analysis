@@ -7,8 +7,7 @@ fi
 
 # wget https://s3.amazonaws.com/ava-dataset/annotations/ava_file_names_trainval_v2.1.txt
 
-for line in $(cat ava_test.txt)
-do
-  $cleanedLine  = $(echo "$line" | sed 's/%0D//g')
-  wget https://s3.amazonaws.com/ava-dataset/trainval/$cleanedLine -P ${DATA_DIR}
-done
+while IFS= read -r line; do
+  cleanedLine=$(echo "$line" | tr -d '\r')
+  wget "https://s3.amazonaws.com/ava-dataset/trainval/$cleanedLine" -P "${DATA_DIR}"
+done < ava_test.txt
