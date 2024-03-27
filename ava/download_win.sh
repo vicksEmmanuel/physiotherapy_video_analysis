@@ -1,3 +1,4 @@
+#!/bin/bash
 DATA_DIR="videos"
 
 if [[ ! -d "${DATA_DIR}" ]]; then
@@ -10,5 +11,5 @@ fi
 for line in $(cat ava_test.txt)
 do
   $cleanedLine  = $(echo "$line" | sed 's/%0D//g')
-  wget https://s3.amazonaws.com/ava-dataset/trainval/$cleanedLine -P ${DATA_DIR}
+  wget https://s3.amazonaws.com/ava-dataset/trainval/$line -P ${DATA_DIR}
 done

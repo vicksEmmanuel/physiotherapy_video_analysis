@@ -10,6 +10,6 @@ for video in $(ls -A1 -U ${IN_DATA_DIR}/*)
 do
   out_name="${OUT_DATA_DIR}/${video##*/}"
   if [ ! -f "${out_name}" ]; then
-    "C:\Program Files (x86)\ffmpeg\bin\ffmpeg.exe" -ss 900 -t 901 -i "${video}" "${out_name}"
+    "C:\Users\Q2094871\Downloads\ffmpeg-master-latest-win64-gpl\ffmpeg\bin\ffmpeg.exe" -ss 900 -t 901 -i "${video}" "${out_name}"
   fi
 done
