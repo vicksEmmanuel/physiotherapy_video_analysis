@@ -16,5 +16,6 @@ do
 
   out_name="${out_video_dir}/${video_name}_%06d.jpg"
 
-  "C:\Users\Q2094871\Downloads\ffmpeg-master-latest-win64-gpl\ffmpeg\bin\ffmpeg.exe" -i "${video}" -r 30 -q:v 1 "${out_name}"
+  # winget install --id=Gyan.FFmpeg  -e
+  ffmpeg -i "${video}" -r 30 -q:v 1 "${out_name}"
 done
