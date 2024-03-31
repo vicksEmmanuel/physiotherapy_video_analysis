@@ -20,7 +20,7 @@ from torch import nn
 from torchmetrics.functional import accuracy
 from torchvision.transforms._functional_video import normalize
 import numpy as np
-from data_preparation.util_2 import  get_video_clip_and_resize, get_video_clip_and_resize2 # Ensure this import matches your project structure
+from data_preparation.util_2 import  get_video_clip_and_resize, get_video_clip_and_resize3, get_video_clip_and_resize2 # Ensure this import matches your project structure
 from pytorchvideo.data.encoded_video import EncodedVideo
 import torch
 from torchvision.transforms import functional as F
@@ -34,7 +34,7 @@ from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 
 
 video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31.mp4'
-new_path = get_video_clip_and_resize(video_path)
+new_path = get_video_clip_and_resize3(video_path)
 encoded_vid = EncodedVideo.from_path(new_path)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
