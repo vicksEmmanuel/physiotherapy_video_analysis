@@ -5,29 +5,24 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
+from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 from detectron2.utils.visualizer import Visualizer
 
 
-
 def get_class_names(pbtxt_path, subset_path=None, class_parent=None):
-    class_names = []
+    label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map(pbtxt_path)
+    class_names = [None] * (max(label_map.keys()) + 1)
     class_parent = {}
     subset_ids = []
 
-    with open(pbtxt_path, 'r') as f:
-        content = f.read()
+    for label_id, label_name in label_map.items():
+        class_names[label_id] = label_name
 
-    labels = content.split('label {')[1:]
-    for idx, label in enumerate(labels, start=1):
-        label_parts = label.strip().split('\n')
-        name = label_parts[1].split(':')[1].strip()[1:-1]
-        label_type = label_parts[3].split(':')[1].strip()[1:-1]
-        
-        class_names.append(name)
-        
+    for label_id in allowed_class_ids:
+        label_type = 'ALLOWED'
         if label_type not in class_parent:
             class_parent[label_type] = []
-        class_parent[label_type].append(idx)
+        class_parent[label_type].append(label_id)
 
     if subset_path is not None:
         with open(subset_path, 'r') as f:
@@ -35,6 +30,8 @@ def get_class_names(pbtxt_path, subset_path=None, class_parent=None):
             subset_ids = [idx for idx, name in enumerate(class_names, start=1) if name in subset]
 
     return class_names, class_parent, subset_ids
+
+
 
 def _create_text_labels(classes, scores, class_names, ground_truth=False):
     """
