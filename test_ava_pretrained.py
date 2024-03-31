@@ -33,9 +33,9 @@ from pytorchvideo.models.resnet import create_resnet, create_resnet_with_roi_hea
 from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 
 
-video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31_resized.mp4'
-# new_path = get_video_clip_and_resize(video_path)
-encoded_vid = EncodedVideo.from_path(video_path)
+video_path = 'test.mp4'
+new_path = get_video_clip_and_resize(video_path)
+encoded_vid = EncodedVideo.from_path(new_path)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = slow_r50_detection(True)
