@@ -82,6 +82,8 @@ def generate_actions_from_video(video_path):
     total_duration = int(encoded_vid.duration)  # Total duration in seconds
     audio_timestamps =  get_audio(video_path, total_duration=total_duration)
 
+    print("Audio timpestamps: ", audio_timestamps)
+
     for i in range(0,len(audio_timestamps)):
         start_sec = audio_timestamps[i]["start"]
         end_sec = audio_timestamps[i]["end"]
