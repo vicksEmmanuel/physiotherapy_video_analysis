@@ -131,27 +131,9 @@ def generate_actions_from_video(video_path):
         inp_imgs = inp_imgs.permute(1,2,3,0)
         inp_imgs = inp_imgs/255.0
 
-        pred_classes = preds.indices[0]
-        confidences = preds.values[0] 
-        
-        actions_this_second = []
-        for idx, confidence in enumerate(confidences):
-            if confidence > confidence_threshold:
-                action_name = Action().action[int(pred_classes[idx])]
-                actions_this_second.append(action_name)
-            else:
-                actions_this_second.append("")  # Placeholder for low confidence predictions
+        print("Predictions: ", preds)
 
         # Log or use the actions_this_second as needed
-        if actions_this_second:  # Check if the list is not empty
-            print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
-            actions_per_second.append({
-                "actions": actions_this_second,
-                "text": audio_timestamps[i]["text"],
-            })
-        else:
-            print(f"No confident actions for second {start_sec}-{end_sec}.")
-
         out_img_pred = video_visualizer.draw_clip_range(inp_imgs, preds, predicted_boxes)
         gif_imgs += out_img_pred
     
