@@ -24,7 +24,7 @@ from data_preparation.util_2 import  get_video_clip_and_resize # Ensure this imp
 from pytorchvideo.data.encoded_video import EncodedVideo
 import torch
 from torchvision.transforms import functional as F
-from detectron2.utils.video_visualizer import VideoVisualizer
+from video_visualizer import VideoVisualizer
 import pytorchvideo.models.slowfast as SlowFastModel
 import cv2
 from model.slowfast_ava_model import SlowFastAva  # Ensure this import matches your project structure
@@ -47,8 +47,14 @@ model.to(device)
 print("Model loaded.")
 
 actions = Action().action
-label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava_action_list.pbtxt')
-video_visualizer = VideoVisualizer(80, label_map, top_k=3, mode="thres",thres=0.5)
+label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt')
+video_visualizer = VideoVisualizer(
+    num_classes=81,
+    class_names_path='ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt',
+    top_k=3, 
+    mode="thres",
+    thres=0.5
+)
 
 print(f"Video action loaded. {actions}")
 
