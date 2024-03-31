@@ -9,7 +9,7 @@ from detectron2.config import get_cfg
 from pytorchvideo.models.hub import slow_r50_detection 
 from detectron2 import model_zoo
 from detectron2.engine import DefaultPredictor
-from pytorchvideo.transforms.functional import (
+from functional import (
     uniform_temporal_subsample,
     short_side_scale_with_boxes,
     clip_boxes_to_image,

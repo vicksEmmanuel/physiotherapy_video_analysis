@@ -1,7 +1,7 @@
 from torchvision.transforms.functional import resize
 from torchvision.transforms import Compose, Resize, Normalize, ToTensor
 from torchvision.transforms._functional_video import normalize
-from pytorchvideo.transforms.functional import (
+from functional import (
     uniform_temporal_subsample,
     short_side_scale_with_boxes,
     clip_boxes_to_image,
