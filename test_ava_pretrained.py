@@ -130,10 +130,6 @@ def generate_actions_from_video(video_path):
         # Plot predictions on the video and save for later visualization.
         inp_imgs = inp_imgs.permute(1,2,3,0)
         inp_imgs = inp_imgs/255.0
-
-        print("Predictions: ", preds)
-
-        # Log or use the actions_this_second as needed
         out_img_pred = video_visualizer.draw_clip_range(inp_imgs, preds, predicted_boxes)
         gif_imgs += out_img_pred
     

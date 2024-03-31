@@ -32,11 +32,9 @@ def get_class_names(pbtxt_path, subset_path=None, class_parent=None):
     if subset_path is not None:
         with open(subset_path, 'r') as f:
             subset = f.read().strip().split('\n')
-            subset_ids = [class_names.index(name) + 1 for name in subset if name in class_names]
+            subset_ids = [idx for idx, name in enumerate(class_names, start=1) if name in subset]
 
     return class_names, class_parent, subset_ids
-
-
 
 def _create_text_labels(classes, scores, class_names, ground_truth=False):
     """
