@@ -48,6 +48,10 @@ print("Model loaded.")
 
 actions = Action().action
 label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt')
+
+print("Label map: ", label_map)
+print("Allowed class ids: ", allowed_class_ids)
+
 video_visualizer = VideoVisualizer(
     num_classes=81,
     class_names_path='ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt',
