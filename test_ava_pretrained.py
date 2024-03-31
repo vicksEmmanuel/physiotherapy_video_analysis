@@ -38,7 +38,8 @@ new_path = get_video_clip_and_resize(video_path)
 encoded_vid = EncodedVideo.from_path(new_path)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = slow_r50_detection(True)
+# model = slow_r50_detection(True)
+model = SlowFastAva.load_from_checkpoint("ava_checkpoints/last.ckpt")
 print(model)
 
 model.eval()
@@ -143,8 +144,6 @@ def generate_actions_from_video(video_path):
 
     vide_save_path = 'output.mp4'
     video = cv2.VideoWriter(vide_save_path,cv2.VideoWriter_fourcc(*'DIVX'), 7, (width,height))
-
-    print(gif_imgs)
 
     for image in gif_imgs:
         img = (255*image).astype(np.uint8)
