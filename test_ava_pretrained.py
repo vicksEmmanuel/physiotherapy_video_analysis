@@ -20,7 +20,7 @@ from torch import nn
 from torchmetrics.functional import accuracy
 from torchvision.transforms._functional_video import normalize
 import numpy as np
-from data_preparation.util_2 import  get_video_clip_and_resize, get_video_clip_and_resize2 # Ensure this import matches your project structure
+from data_preparation.util_2 import  get_video_clip_and_resize, get_video_clip_and_resize3, get_video_clip_and_resize2 # Ensure this import matches your project structure
 from pytorchvideo.data.encoded_video import EncodedVideo
 import torch
 from torchvision.transforms import functional as F
