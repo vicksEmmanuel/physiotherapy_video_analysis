@@ -8,7 +8,7 @@ mediapipe
 matplotlib
 albumentations
 torch
-torchvision==0.15.0
+torchvision
 pytorchvideo
 pytorch-lightning
 pytorch_lightning
