@@ -174,3 +174,7 @@ def generate_actions_from_video(video_path):
     print('Predictions are saved to the video file: ', vide_save_path)
 
     return actions_per_second
+
+
+
+all_actions = generate_actions_from_video(video_path)
