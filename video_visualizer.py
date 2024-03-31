@@ -9,7 +9,7 @@ from detectron2.utils.visualizer import Visualizer
 
 
 
-def get_class_names(pbtxt_path, subset_path=None):
+def get_class_names(pbtxt_path, subset_path=None, class_parent=None):
     class_names = []
     class_parent = {}
     subset_ids = []
