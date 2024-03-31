@@ -5,34 +5,29 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
+from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 from detectron2.utils.visualizer import Visualizer
 
 
-
 def get_class_names(pbtxt_path, subset_path=None, class_parent=None):
-    class_names = []
+    label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map(pbtxt_path)
+    class_names = [None] * (max(label_map.keys()) + 1)
     class_parent = {}
     subset_ids = []
 
-    with open(pbtxt_path, 'r') as f:
-        content = f.read()
+    for label_id, label_name in label_map.items():
+        class_names[label_id] = label_name
 
-    labels = content.split('label {')[1:]
-    for idx, label in enumerate(labels, start=1):
-        label_parts = label.strip().split('\n')
-        name = label_parts[1].split(':')[1].strip()[1:-1]
-        label_type = label_parts[3].split(':')[1].strip()[1:-1]
-        
-        class_names.append(name)
-        
+    for label_id in allowed_class_ids:
+        label_type = 'ALLOWED'
         if label_type not in class_parent:
             class_parent[label_type] = []
-        class_parent[label_type].append(idx)
+        class_parent[label_type].append(label_id)
 
     if subset_path is not None:
         with open(subset_path, 'r') as f:
             subset = f.read().strip().split('\n')
-            subset_ids = [class_names.index(name) + 1 for name in subset if name in class_names]
+            subset_ids = [idx for idx, name in enumerate(class_names, start=1) if name in subset]
 
     return class_names, class_parent, subset_ids
 
@@ -476,6 +471,12 @@ class VideoVisualizer:
                 top_class = torch.squeeze(torch.nonzero(mask), dim=-1).tolist()
                 top_classes.append(top_class)
 
+
+        print("top_scores: ", top_scores)
+        print("top_classes: ", top_classes)
+        print("self.class_names: ", self.class_names)
+        print("ground_truth: ", ground_truth)
+
         # Create labels top k predicted classes with their scores.
         text_labels = []
         for i in range(n_instances):
@@ -487,6 +488,9 @@ class VideoVisualizer:
                     ground_truth=ground_truth,
                 )
             )
+        
+        print("text_labels: ", text_labels)
+        
         frame_visualizer = ImgVisualizer(frame, meta=None)
         font_size = min(
             max(np.sqrt(frame.shape[0] * frame.shape[1]) // 35, 5), 9

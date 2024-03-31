@@ -33,8 +33,8 @@ from pytorchvideo.models.resnet import create_resnet, create_resnet_with_roi_hea
 from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 
 
-video_path = 'data_preparation/actions/pelvis check/2024-02-14 12-46-31.mp4'
-new_path = get_video_clip_and_resize3(video_path)
+video_path = 'test.mp4'
+new_path = get_video_clip_and_resize(video_path)
 encoded_vid = EncodedVideo.from_path(new_path)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -48,6 +48,10 @@ print("Model loaded.")
 
 actions = Action().action
 label_map, allowed_class_ids = AvaLabeledVideoFramePaths.read_label_map('ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt')
+
+print("Label map: ", label_map)
+print("Allowed class ids: ", allowed_class_ids)
+
 video_visualizer = VideoVisualizer(
     num_classes=81,
     class_names_path='ava/annotations/ava_action_list_v2.2_for_activitynet_2019.pbtxt',
@@ -73,7 +77,6 @@ def get_person_bboxes(inp_img, predictor):
     predicted_boxes = boxes[np.logical_and(classes==0, scores>0.75 )].tensor.cpu() # only person
     return predicted_boxes
 
-out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
 
 def generate_actions_from_video(video_path):
     gif_imgs = []
@@ -81,6 +84,8 @@ def generate_actions_from_video(video_path):
     actions_per_second = []
     total_duration = int(encoded_vid.duration)  # Total duration in seconds
     audio_timestamps =  get_audio(video_path, total_duration=total_duration)
+
+    print("Audio timpestamps: ", audio_timestamps)
 
     for i in range(0,len(audio_timestamps)):
         start_sec = audio_timestamps[i]["start"]
@@ -128,28 +133,6 @@ def generate_actions_from_video(video_path):
         # Plot predictions on the video and save for later visualization.
         inp_imgs = inp_imgs.permute(1,2,3,0)
         inp_imgs = inp_imgs/255.0
-
-        pred_classes = preds.indices[0]
-        confidences = preds.values[0] 
-        
-        actions_this_second = []
-        for idx, confidence in enumerate(confidences):
-            if confidence > confidence_threshold:
-                action_name = Action().action[int(pred_classes[idx])]
-                actions_this_second.append(action_name)
-            else:
-                actions_this_second.append("")  # Placeholder for low confidence predictions
-
-        # Log or use the actions_this_second as needed
-        if actions_this_second:  # Check if the list is not empty
-            print(f"Actions for second {start_sec}-{end_sec}: {actions_this_second}")
-            actions_per_second.append({
-                "actions": actions_this_second,
-                "text": audio_timestamps[i]["text"],
-            })
-        else:
-            print(f"No confident actions for second {start_sec}-{end_sec}.")
-
         out_img_pred = video_visualizer.draw_clip_range(inp_imgs, preds, predicted_boxes)
         gif_imgs += out_img_pred
     
@@ -161,6 +144,8 @@ def generate_actions_from_video(video_path):
     vide_save_path = 'output.mp4'
     video = cv2.VideoWriter(vide_save_path,cv2.VideoWriter_fourcc(*'DIVX'), 7, (width,height))
 
+    print(gif_imgs)
+
     for image in gif_imgs:
         img = (255*image).astype(np.uint8)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -170,3 +155,7 @@ def generate_actions_from_video(video_path):
     print('Predictions are saved to the video file: ', vide_save_path)
 
     return actions_per_second
+
+
+
+all_actions = generate_actions_from_video(video_path)
