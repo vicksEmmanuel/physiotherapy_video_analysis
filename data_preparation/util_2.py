@@ -57,7 +57,7 @@ def get_video_clip_and_resize2(video_path):
     return new_path
 
 
-def get_video_clip_and_resize(video_path):
+def get_video_clip_and_resize3(video_path):
     cap = cv2.VideoCapture(video_path)
     fourcc = cv2.VideoWriter_fourcc(*'avc1')  # Use 'avc1' for H.264 codec
     path_without_extension = os.path.splitext(video_path)[0]
