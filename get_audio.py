@@ -7,7 +7,7 @@ from data_preparation.util import get_loader, get_transformer,get_new_transforme
 import torch
 from ava_preparation.ava_dataset_preparation import prepare_ava_dataset
 import subprocess
-import azure.cognitiveservices.speech as speechsdk
+# import azure.cognitiveservices.speech as speechsdk
 import os
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
