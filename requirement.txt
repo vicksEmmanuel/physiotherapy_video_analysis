@@ -7,13 +7,13 @@ opencv-python
 mediapipe
 matplotlib
 albumentations
-torch==2.0.0
-torchvision==0.15.0
+torch
+torchvision
 pytorchvideo
 pytorch-lightning
 pytorch_lightning
 requests
-openai-whisper==20231117
+openai-whisper
 pandas
 yacs>=0.1.6
 pyyaml>=5.1
