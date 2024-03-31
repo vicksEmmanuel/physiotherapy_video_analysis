@@ -474,6 +474,12 @@ class VideoVisualizer:
                 top_class = torch.squeeze(torch.nonzero(mask), dim=-1).tolist()
                 top_classes.append(top_class)
 
+
+        print("top_scores: ", top_scores)
+        print("top_classes: ", top_classes)
+        print("self.class_names: ", self.class_names)
+        print("ground_truth: ", ground_truth)
+
         # Create labels top k predicted classes with their scores.
         text_labels = []
         for i in range(n_instances):
