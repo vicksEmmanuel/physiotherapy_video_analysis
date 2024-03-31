@@ -73,7 +73,7 @@ def get_person_bboxes(inp_img, predictor):
     predicted_boxes = boxes[np.logical_and(classes==0, scores>0.75 )].tensor.cpu() # only person
     return predicted_boxes
 
-out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'avc1'), 30.0, (256, 256))
+out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (256, 256))
 
 def generate_actions_from_video(video_path):
     gif_imgs = []
@@ -160,6 +160,8 @@ def generate_actions_from_video(video_path):
 
     vide_save_path = 'output.mp4'
     video = cv2.VideoWriter(vide_save_path,cv2.VideoWriter_fourcc(*'DIVX'), 7, (width,height))
+
+    print(gif_imgs)
 
     for image in gif_imgs:
         img = (255*image).astype(np.uint8)
