@@ -485,6 +485,9 @@ class VideoVisualizer:
                     ground_truth=ground_truth,
                 )
             )
+        
+        print("text_labels: ", text_labels)
+        
         frame_visualizer = ImgVisualizer(frame, meta=None)
         font_size = min(
             max(np.sqrt(frame.shape[0] * frame.shape[1]) // 35, 5), 9
