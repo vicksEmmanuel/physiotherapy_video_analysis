@@ -11,6 +11,18 @@
 		"foot and ankle examination",
 		"facial symmetry",
 		"thoracic cage position",
-		"gravitational line check"
+		"gravitational line check",
+
+		"use sanitizer",
+		"look at the patient",
+		"speaking to the patient",
+		"demonstrating to the patient",
+		"patient standing up",
+		"patient sitting down",
+		"patient lying down",
+		"patient taking off clothes",
+		"walking towards the back of the patient",
+		"accessing the back of the patient",
+		"hands examination"
 	]
 }
