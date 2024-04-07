@@ -12,7 +12,11 @@
 		"facial symmetry",
 		"thoracic cage position",
 		"gravitational line check",
-
+		"cervical flexion",
+		"lumbar flexion",
+		"lumbar extension",
+		"posterior spine examination",
+		"throracic rotation",
 		"use sanitizer",
 		"look at the patient",
 		"speaking to the patient",
