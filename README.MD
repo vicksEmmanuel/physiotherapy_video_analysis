@@ -1,9 +1,12 @@
 
 
-![https://github.com/vicksEmmanuel/physiotherapy_video_analysis/assets/25255706/d9a1631f-a875-4f8e-8910-c9274d8d6e89](Result)
-
-
 <!-- @format -->
+
+<img width="1440" alt="Screenshot 2024-05-05 at 01 28 13" src="https://github.com/vicksEmmanuel/physiotherapy_video_analysis/assets/25255706/3410f9ca-c58e-4761-8c95-e4367a217ab7">
+
+
+<img width="1440" alt="Screenshot 2024-05-03 at 03 47 20" src="https://github.com/vicksEmmanuel/physiotherapy_video_analysis/assets/25255706/af9c099e-44e7-4472-ab98-6d0c182ffe8c">
+
 
 ## Installation
 
